@@ -1,6 +1,6 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
+  margin: 0 0;
   padding: 2rem;
   text-align: center;
 }
@@ -18,6 +18,36 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.map-component {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.map {
+    width: 900px;
+    height: 800px;
+    margin: 30px;
+    border: 1px solid gray;
+    background-color: rgb(125, 193, 220);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: whitesmoke;
+    border-radius: 5px;
+}
+
+/* --- (4) Leaflet container with map dimensions (other properties optional) --- */
+.leaflet-container {
+    width: 900px;
+    height: 800px;
+    border-radius: 5px;
+}
+
+.leaflet-control-attribution {
+    font-size: 10px;
+}
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
