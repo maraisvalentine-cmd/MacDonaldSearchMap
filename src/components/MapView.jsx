@@ -1,13 +1,26 @@
-import {MapContainer, Marker, TileLayer, useMap} from 'react-leaflet'
+import {MapContainer, Marker, TileLayer, useMap, useMapEvent} from 'react-leaflet'
 import SearchComponent from './SearchComponent.jsx';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {search} from '../services/nominatimApi.js';
-
+import MarkerPopUp from './MarkerPopUp.jsx';
 
 export default function MapView() {
     const [restaurants, setRestaurants] = useState([]);
+    const [selectedRestaurant, setSelectedRestaurant] = useState('');
+    const [position, setPosition] = useState([48.8611, 2.3484]);
 
-    const updateRestaurants = async (city) => {
+    const updateMap = async (e, city) => {
+        e.preventDefault();
+        try {
+            setPosition([city.lat, city.lon]);
+            await updateRestaurants(e, city.name);
+        } catch (e) {
+            console.log(e.stack);
+        }
+    }
+
+    const updateRestaurants = async (e, city) => {
+        e.preventDefault();
         try {
             const result = await search({
                 params: {
@@ -22,15 +35,33 @@ export default function MapView() {
         }
     }
 
-    return (<div className="mx-auto content-center">
-        <SearchComponent onUpdate={updateRestaurants}></SearchComponent>
-        <MapContainer
-            center={[48.8611, 2.3484]}
-            zoom={13}
-            scrollWheelZoom={false}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-            {restaurants.map(restaurant => (<Marker position={[restaurant.lat, restaurant.lon]} key={restaurant.osm_id} />))}
-        </MapContainer></div>);
+    const RecenterAutomatically = ({position}) => {
+        const map = useMap();
+        useEffect(() => {
+            map.setView(position);
+        }, position);
+        return null;
+    }
+
+    return (
+        <div className="static">
+            <MapContainer
+                center={position}
+                zoom={13}
+                scrollWheelZoom={false}>
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                <RecenterAutomatically position={position}/>
+
+                {restaurants.map(restaurant => (
+                    <Marker position={[restaurant.lat, restaurant.lon]} key={restaurant.osm_id}>
+                        <MarkerPopUp address={restaurant.display_name} key={restaurant.osm_id}></MarkerPopUp>
+                    </Marker>))}
+            </MapContainer>
+
+            <div className="absolute top-0 left-16 z-10">
+                <SearchComponent updateMap={updateMap}/>
+            </div>
+        </div>);
 }
