@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useState} from 'react';
 import {search} from '../services/nominatimApi.js';
 import Select from 'react-select';
 
