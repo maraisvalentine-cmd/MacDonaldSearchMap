@@ -11,10 +11,10 @@ export default function SearchComponent({updateMap}) {
         if (c.length > 2) {
             try {
                 search({
-                    params: {
-                        format: 'json',
-                        city: c,
-                    }
+                    country: 'France',
+                    city: c,
+                    dedupe: 1,
+                    featureType: 'city',
                 }).then(response => {
                     setPossibleCities(response.data.map((c, i) => ({value: c, label: c.display_name})));
                     setMenuOpen(true);

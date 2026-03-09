@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react';
 
 export default function PopIn({restaurant}) {
-    const [label,setLabel] = useState('')
+    const [label, setLabel] = useState('')
     const [address, setAddress] = useState('');
 
     useEffect(() => {
-        if (restaurant && !restaurant.empty) {
+        if (restaurant && restaurant?.display_name) {
             setAddress(restaurant.display_name);
             setLabel('Restaurant sélectionné');
         } else {

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const nominatimApi = axios.create({
     baseURL: 'https://nominatim.openstreetmap.org/',
@@ -16,9 +16,18 @@ nominatimApi.interceptors.response.use(
 );
 
 
-export const search = (config = {}) => nominatimApi.get("search", config);
-export const reverse = (config = {}) => nominatimApi.get("reverse", config);
-export const lookup = (config = {}) => nominatimApi.get("lookup", config);
-export const details = (config = {}) => nominatimApi.get("details", config);
+export const search = (config = {}) => {
+    const searchConfig = {
+        params: {
+            ...config,
+            format: 'json',
+        }
+    }
+    return nominatimApi.get('search', searchConfig);
+}
+
+export const reverse = (config = {}) => nominatimApi.get('reverse', config);
+export const lookup = (config = {}) => nominatimApi.get('lookup', config);
+export const details = (config = {}) => nominatimApi.get('details', config);
 
 export default nominatimApi;
