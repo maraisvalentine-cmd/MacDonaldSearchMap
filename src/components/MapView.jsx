@@ -1,26 +1,27 @@
 import {MapContainer, Marker, TileLayer, useMap, useMapEvent} from 'react-leaflet'
 import SearchComponent from './SearchComponent.jsx';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {search} from '../services/nominatimApi.js';
 import MarkerPopUp from './MarkerPopUp.jsx';
-import PopIn from './PopIn.jsx';
+import SelectionDetails from './SelectionDetails.jsx';
+import geolocateLogo from '../assets/geolocate.svg';
 
 export default function MapView() {
     const [restaurants, setRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState({});
     const [position, setPosition] = useState([48.8611, 2.3484]);
+
     const [doSearch, setDoSearch] = useState(false);
     const [doLocate, setDoLocate] = useState(false);
 
-    const updateMap = async (e, city) => {
-        e.preventDefault();
+    const updateMap = useCallback((city) => {
         try {
             setPosition([city.lat, city.lon]);
             setDoSearch(true);
         } catch (e) {
             console.log(e.stack);
         }
-    }
+    }, []);
 
     const selectRestaurant = (e, restaurant) => {
         e.preventDefault();
@@ -92,27 +93,24 @@ export default function MapView() {
                         </MarkerPopUp>
                     </Marker>))}
             </MapContainer>
-            <div className="absolute top-0 left-16 z-10">
-                <SearchComponent updateMap={updateMap}/>
-            </div>
+            <div className="w-full">
+                <div className="absolute top-0 left-12 z-10 md:left-16 w-4/6">
+                    <SearchComponent updateMap={updateMap}/>
+                </div>
 
-            <div className="absolute top-2 right-5 z-10">
-                <button
-                    className="py-1 border-2 border-black rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-200 hover:ring-4"
-                    onClick={e => {
-                        locate(e)
-                    }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
-                         stroke="currentColor" className="size-10">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        <path strokeLinecap="round" strokeLinejoin="round"
-                              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
-                    </svg>
-                </button>
-            </div>
+                <div className="absolute top-4 right-5 z-10">
+                    <button
+                        className="py-1 border-2 border-black rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-200 hover:ring-4"
+                        onClick={e => {
+                            locate(e)
+                        }}>
 
+                        <img src={geolocateLogo} className="h-8 w-8" alt="Géolocaliser"/>
+                    </button>
+                </div>
+            </div>
             <div className="absolute w-full bottom-0 z-10">
-                <PopIn restaurant={selectedRestaurant}/>
+                <SelectionDetails restaurant={selectedRestaurant}/>
             </div>
         </div>);
 }

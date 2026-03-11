@@ -1,5 +1,8 @@
 import {Popup} from 'react-leaflet';
 
+/**
+ * Une popup pour le détail d'un restaurant au clic d'un marker de la carte.
+ */
 export default function MarkerPopUp({restaurant, onSelect}) {
     return (<Popup>
         <div className="text-l text-center font-bold mb-10 ">{restaurant.display_name}</div>
