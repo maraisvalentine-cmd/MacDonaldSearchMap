@@ -1,13 +1,13 @@
 import './App.css'
 import {Route, Routes} from 'react-router-dom';
-import MapView from './components/MapView.jsx';
+import Home from './components/Home.jsx';
 
 function App() {
   return (
       <div>
           <main>
               <Routes>
-                  <Route path="/" element={<MapView/>}></Route>
+                  <Route path="/" element={<Home/>}></Route>
               </Routes>
           </main>
       </div>

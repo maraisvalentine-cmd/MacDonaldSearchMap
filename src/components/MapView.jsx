@@ -1,67 +1,74 @@
-import {MapContainer, Marker, TileLayer, useMap, useMapEvent} from 'react-leaflet'
-import SearchComponent from './SearchComponent.jsx';
-import {useEffect, useState} from 'react';
+import {MapContainer, TileLayer, useMap} from 'react-leaflet'
+import RestaurantMarkers from './RestaurantMarkers.jsx';
+import {useEffect} from 'react';
 import {search} from '../services/nominatimApi.js';
-import MarkerPopUp from './MarkerPopUp.jsx';
+import {useDispatch, useSelector} from 'react-redux';
+import {resetLocate} from '../reducers/locateSlice.js';
+import {doSearch, resetSearch} from '../reducers/searchingSlice.js';
+import {setPosition} from '../reducers/positionSlice.js';
+import {setRestaurantsList} from '../reducers/restaurantsListSlice.js';
 
 export default function MapView() {
-    const [restaurants, setRestaurants] = useState([]);
-    const [selectedRestaurant, setSelectedRestaurant] = useState('');
-    const [position, setPosition] = useState([48.8611, 2.3484]);
+    const mapSearch = useSelector(state => state.mapSearch.value);
+    const mapLocate = useSelector(state => state.mapLocate.value);
+    const position = useSelector(state => state.position.value);
+    const dispatch = useDispatch();
 
-    const updateMap = async (e, city) => {
-        e.preventDefault();
-        try {
-            setPosition([city.lat, city.lon]);
-            await updateRestaurants(e, city.name);
-        } catch (e) {
-            console.log(e.stack);
+    const LocateAndSearch = () => {
+        if (mapLocate) {
+            const map = useMap();
+            useEffect(() => {
+                map.locate().on('locationfound', (pos) => {
+                    dispatch(setPosition([pos.latlng.lat, pos.latlng.lng]));
+                    dispatch(resetLocate());
+                    dispatch(doSearch());
+                });
+            }, [mapLocate]);
+        }
+        return null;
+    }
+
+
+    const SearchRestaurants = () => {
+        const map = useMap();
+        if (mapSearch) {
+            useEffect(() => {
+                console.log("research");
+                const bounds = map.getBounds();
+                const viewbox = bounds._northEast.lng + ',' + bounds._northEast.lat + ',' + bounds._southWest.lng + ',' + bounds._southWest.lat
+                search({
+                    viewbox: viewbox,
+                    bounded: 1,
+                    amenity: 'McDonald',
+                    limit: '20',
+                }).then(result => dispatch(setRestaurantsList(result.data)));
+                dispatch(resetSearch());
+            }, [mapSearch]);
         }
     }
 
-    const updateRestaurants = async (e, city) => {
-        e.preventDefault();
-        try {
-            const result = await search({
-                params: {
-                    format: 'json',
-                    city: city,
-                    amenity: 'McDonald'
-                }
-            });
-            setRestaurants(result.data);
-        } catch (e) {
-            console.log(e.stack);
-        }
-    }
 
-    const RecenterAutomatically = ({position}) => {
+    const RecenterAutomaticallyAfterSearch = () => {
         const map = useMap();
         useEffect(() => {
-            map.setView(position);
-        }, position);
+            map.setView(position, 13);
+        }, [position]);
         return null;
     }
 
     return (
-        <div className="static">
-            <MapContainer
-                center={position}
-                zoom={13}
-                scrollWheelZoom={false}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                <RecenterAutomatically position={position}/>
+        <MapContainer
+            center={position}
+            zoom={13}
+            scrollWheelZoom={false}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+            <LocateAndSearch/>
+            <SearchRestaurants/>
+            <RecenterAutomaticallyAfterSearch/>
 
-                {restaurants.map(restaurant => (
-                    <Marker position={[restaurant.lat, restaurant.lon]} key={restaurant.osm_id}>
-                        <MarkerPopUp address={restaurant.display_name} key={restaurant.osm_id}></MarkerPopUp>
-                    </Marker>))}
-            </MapContainer>
-
-            <div className="absolute top-0 left-16 z-10">
-                <SearchComponent updateMap={updateMap}/>
-            </div>
-        </div>);
+            <RestaurantMarkers/>
+        </MapContainer>
+    );
 }
