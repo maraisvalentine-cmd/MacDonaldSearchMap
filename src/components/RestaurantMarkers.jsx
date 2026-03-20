@@ -7,7 +7,7 @@ export default function RestaurantMarkers() {
 
     return (
         <>
-            {restaurants.map(restaurant => (
+            {restaurants && restaurants.map(restaurant => (
                 <Marker position={[restaurant.lat, restaurant.lon]}
                         key={restaurant.osm_id}>
                     <MarkerPopUp restaurant={restaurant}

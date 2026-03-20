@@ -1,17 +1,21 @@
 import {describe, expect, it, vi} from 'vitest';
-import {render, screen} from '@testing-library/react';
+import {fireEvent, screen} from '@testing-library/react';
 import SelectionDetails from '../components/SelectionDetails.jsx';
-import {MemoryRouter} from 'react-router-dom';
+import {renderWithProviders} from './TestUtils.jsx';
+import {setSelectedRestaurant} from '../reducers/selectedRestaurantSlice.js';
+import mapStore from '../mapStore.js';
 
 const mockRestaurantComplet = vi.mockObject({
     osm_type: 'way',
     osm_id: '12345',
     display_name: 'Restaurant',
-})
-
-const mockRestaurantVide = vi.mockObject({})
+});
 
 const mockLookup = vi.fn().mockReturnValue({
+    data: [{
+        address: {},
+        extratags: {}
+    }],
     then: () => vi.fn()
 });
 vi.mock('../services/nominatimApi.js', () => ({
@@ -19,20 +23,61 @@ vi.mock('../services/nominatimApi.js', () => ({
 }));
 
 describe('SelectionDetails', () => {
-    it('sans restaurant, n\'affiche qu\'un label', () => {
-        render(<SelectionDetails restaurant={mockRestaurantVide}/>, {wrapper: MemoryRouter});
-        const element = screen.getByText('Aucun restaurant sélectionné');
-        expect(element).not.toBeNull();
+    describe('sans restaurant', () => {
+        it('n\'affiche qu\'un label', () => {
+            renderWithProviders(<SelectionDetails/>);
+            const element = screen.getByText('Aucun restaurant sélectionné');
+            expect(element).not.toBeNull();
+        });
     });
 
-    it('avec restaurant, affiche le bon label', () => {
-        render(<SelectionDetails restaurant={mockRestaurantComplet}/>, {wrapper: MemoryRouter});
-        const element = screen.getByText('Restaurant sélectionné');
-        expect(element).not.toBeNull();
+
+    describe('avec restaurant', () => {
+        it('affiche le bon label', () => {
+            const store = mapStore;
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            const element = screen.getByText('Restaurant sélectionné');
+            expect(element).not.toBeNull();
+        });
+
+        it('recherche son adresse et ses détails', () => {
+            const store = mapStore;
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            expect(mockLookup).toHaveBeenCalled();
+        });
+
+        it('cache les détails au clic sur chevron down', () => {
+            const store = mapStore;
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            fireEvent.click(screen.getByRole('hide'));
+            expect(screen.queryByRole('continue')).toBeNull();
+        });
+
+        it('affiche les détails au clic sur chevron up', () => {
+            const store = mapStore;
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            fireEvent.click(screen.getByRole('hide'));
+            fireEvent.click(screen.getByRole('show'));
+            expect(screen.getByRole('continue')).not.toBeNull();
+        });
+
+        it('vide les détails au clic sur close', () => {
+            const store = mapStore;
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            fireEvent.click(screen.getByRole('close'));
+            const element = screen.getByText('Aucun restaurant sélectionné');
+            expect(element).not.toBeNull();
+        });
     });
 
-    it('avec restaurant, recherche son adresse et ses détails', () => {
-        render(<SelectionDetails restaurant={mockRestaurantComplet}/>, {wrapper: MemoryRouter});
-        expect(mockLookup).toHaveBeenCalled();
-    })
 });

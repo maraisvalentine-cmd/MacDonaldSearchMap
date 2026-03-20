@@ -2,6 +2,7 @@ import {search} from '../services/nominatimApi.js';
 import {fireEvent, render, screen} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import SearchComponent from '../components/SearchComponent.jsx';
+import {renderWithProviders} from './TestUtils.jsx';
 
 const mockSearch = vi.fn().mockReturnValue({then: ()=> vi.fn()});
 vi.mock('../services/nominatimApi.js', () => ({
@@ -10,7 +11,7 @@ vi.mock('../services/nominatimApi.js', () => ({
 
 describe('SearchComponent', () => {
     it('ne fait aucun appel nominatim à moins de 3 caractères', () => {
-        render(<SearchComponent/>);
+        renderWithProviders(<SearchComponent/>);
         fireEvent.change(screen.getByRole('combobox'), {
             target: {value: 'Ly'},
         });
@@ -18,7 +19,7 @@ describe('SearchComponent', () => {
     });
 
     it('appelle une api nominatim de recherche à partir de 3 caractères', () => {
-        render(<SearchComponent/>);
+        renderWithProviders(<SearchComponent/>);
         fireEvent.change(screen.getByRole('combobox'), {
             target: {value: 'Lyo'},
         });

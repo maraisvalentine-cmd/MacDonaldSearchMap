@@ -39,13 +39,12 @@ export default function SelectionDetails() {
     )
 
     useEffect(() => {
-        if (restaurant && restaurant?.display_name) {
+        if (restaurant && restaurant?.osm_id) {
             renderAddress();
         } else {
             setAddress(null);
         }
     }, [restaurant]);
-
 
     return (
         <div className="absolute w-full bottom-0 z-10">
@@ -58,16 +57,19 @@ export default function SelectionDetails() {
                             <span className="font-bold">Restaurant sélectionné
                                 {!hide &&
                                     <button className="absolute right-6"
+                                            role="hide"
                                             onClick={e => setHide(true)}>
                                         <img src={chevronDownLogo} className="h-4 w-4" alt="Hide"/>
                                     </button>}
                                 {!hide &&
                                     <button className="absolute right-0"
+                                            role="close"
                                             onClick={e => dispatch(resetSelectedRestaurant())}>
                                         <img src={closeLogo} className="h-4 w-4" alt="Close"/>
                                     </button>
                                 }
                                 {hide && <button className="absolute right-0"
+                                                 role="show"
                                                  onClick={e => setHide(false)}>
                                     <img src={chevronUpLogo} className="h-4 w-4" alt="Show"/>
                                 </button>
@@ -95,6 +97,7 @@ export default function SelectionDetails() {
                             <Link to={extraData.website}>
                                 <button
                                     className="py-1 px-2 border-2 border-black rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-200 hover:ring-4"
+                                    role="continue"
                                 > Continuer
                                 </button>
                             </Link>

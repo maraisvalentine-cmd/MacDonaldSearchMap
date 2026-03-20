@@ -5,6 +5,8 @@ import searchLogo from '../assets/search.svg';
 import {doSearch} from '../reducers/searchingSlice.js';
 import {useDispatch} from 'react-redux';
 import {setPosition} from '../reducers/positionSlice.js';
+import {searchCity} from '../useSearch.js';
+import {useMutation} from '@tanstack/react-query';
 
 /**
  * Un composant de recherche de ville.
@@ -16,21 +18,19 @@ export default function SearchComponent() {
     const [isMenuOpen, setMenuOpen] = useState(false);
     const dispatch = useDispatch();
 
+    const mutateCity = useMutation({
+        mutationFn: (c) => searchCity(c),
+        onSuccess: data => {
+            setMenuOpen(true);
+            setPossibleCities(data.map(r => ({value: r, label: r.display_name})));
+        },
+        onError: error => {console.log(error)}
+    });
+
+
     const handlePossibilities = (c) => {
         if (c.length > 2) {
-            try {
-                search({
-                    country: 'France',
-                    city: c,
-                    dedupe: 1,
-                    featureType: 'city',
-                }).then(response => {
-                    setPossibleCities(response.data.map((c, i) => ({value: c, label: c.display_name})));
-                    setMenuOpen(true);
-                });
-            } catch (e) {
-                console.log(e.stack);
-            }
+            mutateCity.mutate(c);
         } else {
             setMenuOpen(false);
         }

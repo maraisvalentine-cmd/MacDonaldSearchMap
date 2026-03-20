@@ -5,7 +5,7 @@ import positionReducer from './reducers/positionSlice.js';
 import selectedRestaurantReducer from './reducers/selectedRestaurantSlice.js';
 import restaurantsListReducer from './reducers/restaurantsListSlice.js';
 
-const store = configureStore({
+const mapStore = configureStore({
     reducer: {
         mapSearch: searchingReducer,
         mapLocate: locateReducer,
@@ -15,4 +15,4 @@ const store = configureStore({
     }
 });
 
-export default store;
+export default mapStore;
