@@ -1,11 +1,12 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {lookup} from '../services/nominatimApi.js';
 import {Link} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {resetSelectedRestaurant} from '../reducers/selectedRestaurantSlice.js';
 import closeLogo from '../assets/close.svg';
 import chevronDownLogo from '../assets/chevron-down.svg';
 import chevronUpLogo from '../assets/chevron-up.svg';
+import {useMutation} from '@tanstack/react-query';
+import {useLookupRestaurant} from '../useApi.js';
 
 /**
  * Un bandeau d'affichage des détails du restaurant sélectionné.
@@ -16,6 +17,17 @@ export default function SelectionDetails() {
     const [extraData, setExtraData] = useState({});
     const restaurant = useSelector(state => state.selectedRestaurant.value);
     const dispatch = useDispatch();
+
+    const mutateDetails = useMutation({
+        mutationFn: (osmIds) => useLookupRestaurant(osmIds),
+        onSuccess: data => {
+            setAddress(data.address);
+            setExtraData(data.extratags);
+        },
+        onError: error => {
+            console.log(error)
+        }
+    })
 
     const osmType = useMemo(() => {
         if (restaurant.osm_type === 'way') {
@@ -28,12 +40,8 @@ export default function SelectionDetails() {
     }, [restaurant]);
 
     const renderAddress = useCallback(() => {
-            lookup({
-                osm_ids: osmType + restaurant.osm_id
-            }).then(result => {
-                setAddress(result.data[0].address);
-                setExtraData(result.data[0].extratags);
-            });
+            const osmIds = osmType + restaurant.osm_id
+            mutateDetails.mutate(osmIds);
         },
         [restaurant]
     )

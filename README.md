@@ -8,6 +8,7 @@ Une interface utilisateur permettant la recherche et l'affichage de restaurants 
 - React Leaflet : Utilisation de la bibliothèque react leaflet pour intégrer Leaflet (carte interactive) dans 
   l'application React.
 - API Nominatim : Appels à l'API Nominatim pour rechercher des villes et localiser des restaurants.
+- React Query : Utilisation pour les appels aux API Nominatim.
 - Framework Vitest / librairie Jest Dom : Utilisation pour des tests unitaires efficaces.
 - Librairie React Redux : Pour un partage des informations plus efficace entre composants.
 

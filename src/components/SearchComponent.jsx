@@ -1,11 +1,10 @@
 import {useState} from 'react';
-import {search} from '../services/nominatimApi.js';
 import Select from 'react-select';
 import searchLogo from '../assets/search.svg';
 import {doSearch} from '../reducers/searchingSlice.js';
 import {useDispatch} from 'react-redux';
 import {setPosition} from '../reducers/positionSlice.js';
-import {searchCity} from '../useSearch.js';
+import {useSearchCity} from '../useApi.js';
 import {useMutation} from '@tanstack/react-query';
 
 /**
@@ -19,12 +18,14 @@ export default function SearchComponent() {
     const dispatch = useDispatch();
 
     const mutateCity = useMutation({
-        mutationFn: (c) => searchCity(c),
+        mutationFn: (c) => useSearchCity(c),
         onSuccess: data => {
             setMenuOpen(true);
             setPossibleCities(data.map(r => ({value: r, label: r.display_name})));
         },
-        onError: error => {console.log(error)}
+        onError: error => {
+            console.log(error)
+        }
     });
 
 
