@@ -1,6 +1,6 @@
-import {search} from './services/nominatimApi.js';
+import {lookup, search} from './services/nominatimApi.js';
 
-export const searchCity = async (city) => {
+export const useSearchCity = async (city) => {
     const result = await search({
         country: 'France',
         city: city,
@@ -13,7 +13,7 @@ export const searchCity = async (city) => {
     return result.data;
 };
 
-export const searchRestaurants = async (viewbox) => {
+export const useSearchRestaurants = async (viewbox) => {
     const result = await search({
         viewbox: viewbox,
         bounded: 1,
@@ -23,6 +23,15 @@ export const searchRestaurants = async (viewbox) => {
     if (result.status !== 200) {
         throw result.statusText;
     }
-    console.log(result.data);
     return result.data;
+}
+
+export const useLookupRestaurant = async (osmIds) => {
+    const result = await lookup({
+        osm_ids: osmIds
+    });
+    if (result.status !== 200) {
+        throw result.statusText;
+    }
+    return result.data[0];
 }

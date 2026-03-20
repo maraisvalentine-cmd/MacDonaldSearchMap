@@ -1,23 +1,22 @@
 import {MapContainer, TileLayer, useMap} from 'react-leaflet'
 import RestaurantMarkers from './RestaurantMarkers.jsx';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {resetLocate} from '../reducers/locateSlice.js';
 import {doSearch, resetSearch} from '../reducers/searchingSlice.js';
 import {setPosition} from '../reducers/positionSlice.js';
 import {setRestaurantsList} from '../reducers/restaurantsListSlice.js';
 import {useMutation} from '@tanstack/react-query';
-import {searchRestaurants} from '../useSearch.js';
+import {useSearchRestaurants} from '../useApi.js';
 
 export default function MapView() {
     const mapSearch = useSelector(state => state.mapSearch.value);
     const mapLocate = useSelector(state => state.mapLocate.value);
     const position = useSelector(state => state.position.value);
-    const [viewbox, setViewbox] = useState(null);
     const dispatch = useDispatch();
 
     const mutateRestaurantsList = useMutation({
-        mutationFn: () => searchRestaurants(viewbox),
+        mutationFn: (viewbox) => useSearchRestaurants(viewbox),
         onSuccess: data => dispatch(setRestaurantsList(data)),
         onError: error => console.log(error)
     });
@@ -41,11 +40,10 @@ export default function MapView() {
         if (mapSearch) {
             useEffect(() => {
                 const bounds = map.getBounds();
-                setViewbox(bounds._northEast.lng + ',' + bounds._northEast.lat + ',' + bounds._southWest.lng + ',' + bounds._southWest.lat)
+                const viewbox = (bounds._northEast.lng + ',' + bounds._northEast.lat + ',' + bounds._southWest.lng + ',' + bounds._southWest.lat)
+                mutateRestaurantsList.mutate(viewbox);
                 dispatch(resetSearch());
-            }, [mapSearch]);
-
-            mutateRestaurantsList.mutate();
+            }, [mapSearch, position]);
         }
     }
 
