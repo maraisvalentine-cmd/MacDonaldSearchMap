@@ -22,7 +22,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # étape: map-view
   # champ: map_marker
   # selector: [data-testid=map] .leaflet-marker-icon
-  # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
+  # intercept-required: GET communes (nom), GET search (amenity=McDonald)
   # [LISTE]
   # render: restaurants.map, un Marker par restaurant
   Scénario: Un marqueur est affiché par restaurant retourné
@@ -45,7 +45,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # étape: map-view
   # champ: map_popup_name
   # selector: [data-testid=popup-name]
-  # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
+  # intercept-required: GET communes (nom), GET search (amenity=McDonald)
   # [NOMINAL]
   Scénario: Cliquer un marqueur ouvre la popup du restaurant
     Soit j'ai lancé la recherche de restaurants pour "Lyon"

@@ -41,6 +41,15 @@ Then('un appel de recherche de ville est émis', () => {
     cy.wait('@searchCity');
 });
 
+// La recherche de ville passe par l'API des communes (geo.api.gouv.fr), pas par Nominatim dont
+// la politique d'usage interdit l'autocomplétion côté client.
+Then('la recherche de ville porte sur {string}', (name) => {
+    cy.get('@searchCity.all').then((calls) => {
+        const last = calls[calls.length - 1];
+        expect(new URL(last.request.url).searchParams.get('nom')).to.equal(name);
+    });
+});
+
 Then('{int} suggestions de villes sont affichées', (count) => {
     cy.get(FIELDS['Suggestion de ville']).should('have.length', count);
 });

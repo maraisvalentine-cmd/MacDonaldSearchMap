@@ -23,7 +23,7 @@ Fonctionnalité: Recherche de ville
   # étape: search-city
   # champ: search_city_input
   # selector: [data-testid=search-city-select] input[role=combobox]
-  # intercept-required: GET search (featureType=city)
+  # intercept-required: GET communes (nom)
   # [CONDITIONNEL]
   # render: handlePossibilities, c.length > 2 sinon menu fermé
   Scénario: Moins de 3 caractères ne déclenche aucune recherche
@@ -35,31 +35,32 @@ Fonctionnalité: Recherche de ville
   # étape: search-city
   # champ: search_city_input
   # selector: [data-testid=search-city-select] input[role=combobox]
-  # intercept-required: GET search (featureType=city)
+  # intercept-required: GET communes (nom)
   # [CONDITIONNEL]
   # render: handlePossibilities, c.length > 2 déclenche mutateCity
   Scénario: 3 caractères déclenchent la recherche de ville
     Quand je saisis "Lyo" dans le champ de recherche de ville
     Alors un appel de recherche de ville est émis
+    Et la recherche de ville porte sur "Lyo"
     Et 2 suggestions de villes sont affichées
 
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_option
   # selector: [data-testid=search-city-select] [role=option]
-  # intercept-required: GET search (featureType=city)
+  # intercept-required: GET communes (nom)
   # [LISTE]
-  # render: possibleCities = data.map(r => label: r.display_name)
-  Scénario: Les suggestions reprennent le nom complet des villes retournées
+  # render: possibleCities = data.map(r => label: r.display_name), libellé commune, département
+  Scénario: Les suggestions affichent la commune et son département
     Quand je saisis "Lyon" dans le champ de recherche de ville
-    Alors la suggestion numéro 1 contient "Lyon, Métropole de Lyon"
-    Et la suggestion numéro 2 contient "Lyon, Rhône"
+    Alors la suggestion numéro 1 contient "Lyon, Rhône"
+    Et la suggestion numéro 2 contient "Lyons-la-Forêt, Eure"
 
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_input
   # selector: [data-testid=search-city-select] input[role=combobox]
-  # intercept-required: GET search (featureType=city)
+  # intercept-required: GET communes (nom)
   # [CONDITIONNEL]
   # render: menuIsOpen=isMenuOpen, repassé à false sous 3 caractères
   Scénario: Repasser sous 3 caractères ferme les suggestions
@@ -73,7 +74,7 @@ Fonctionnalité: Recherche de ville
   # étape: search-city
   # champ: search_city_input
   # selector: [data-testid=search-city-select] input[role=combobox]
-  # intercept-required: GET search (featureType=city) en erreur 500
+  # intercept-required: GET communes (nom) en erreur 500
   # [CONDITIONNEL]
   # render: onError de mutateCity, le menu n'est pas ouvert
   Scénario: Une erreur de l'API n'affiche aucune suggestion
@@ -86,7 +87,7 @@ Fonctionnalité: Recherche de ville
   # étape: search-city
   # champ: search_city_submit
   # selector: [data-testid=search-submit]
-  # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
+  # intercept-required: GET communes (nom), GET search (amenity=McDonald)
   # [NOMINAL]
   Scénario: Valider une ville lance la recherche de restaurants
     Quand je saisis "Lyon" dans le champ de recherche de ville
@@ -99,7 +100,7 @@ Fonctionnalité: Recherche de ville
   # étape: search-city
   # champ: search_city_submit
   # selector: [data-testid=search-submit]
-  # intercept-required: GET search (featureType=city), GET search (amenity=McDonald) avec viewbox
+  # intercept-required: GET communes (nom), GET search (amenity=McDonald) avec viewbox
   # [NOMINAL]
   # render: SearchRestaurants lit la zone visible après le recentrage de la carte sur la ville
   Scénario: La recherche de restaurants porte sur la zone de la ville choisie

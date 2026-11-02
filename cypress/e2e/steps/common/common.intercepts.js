@@ -1,4 +1,5 @@
 const NOMINATIM_HOST = 'nominatim.openstreetmap.org';
+const GEO_API_HOST = 'geo.api.gouv.fr';
 
 /** Les tuiles OpenStreetMap ne sont pas chargées : seule la structure Leaflet nous intéresse. */
 export const stubTiles = () =>
@@ -8,13 +9,12 @@ export const stubTiles = () =>
         body: '',
     });
 
-/** Recherche de ville : GET search avec featureType=city (cf. searchCity). */
+/** Recherche de ville : GET communes sur l'API geo.api.gouv.fr (cf. searchCity). */
 export const stubCitySearch = (response = {fixture: 'cities.json'}) =>
     cy.intercept({
         method: 'GET',
-        hostname: NOMINATIM_HOST,
-        pathname: '/search',
-        query: {featureType: 'city'},
+        hostname: GEO_API_HOST,
+        pathname: '/communes',
     }, response).as('searchCity');
 
 /** Recherche de restaurants : GET search avec amenity=McDonald (cf. searchRestaurants). */

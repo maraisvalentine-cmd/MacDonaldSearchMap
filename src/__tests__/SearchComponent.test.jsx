@@ -3,25 +3,25 @@ import {describe, expect, it, vi} from 'vitest';
 import SearchComponent from '../components/SearchComponent.jsx';
 import {renderWithProviders} from './TestUtils.jsx';
 
-const mockSearch = vi.fn().mockReturnValue({then: ()=> vi.fn()});
-vi.mock('../services/nominatimApi.js', () => ({
-    search: (...args) => mockSearch(...args),
+const mockSearchCommunes = vi.fn().mockReturnValue({then: ()=> vi.fn()});
+vi.mock('../services/geoApi.js', () => ({
+    searchCommunes: (...args) => mockSearchCommunes(...args),
 }));
 
 describe('SearchComponent', () => {
-    it('ne fait aucun appel nominatim à moins de 3 caractères', () => {
+    it('ne fait aucun appel à l\'API des communes à moins de 3 caractères', () => {
         renderWithProviders(<SearchComponent/>);
         fireEvent.change(screen.getByRole('combobox'), {
             target: {value: 'Ly'},
         });
-        expect(mockSearch).not.toHaveBeenCalled();
+        expect(mockSearchCommunes).not.toHaveBeenCalled();
     });
 
-    it('appelle une api nominatim de recherche à partir de 3 caractères', async () => {
+    it('appelle l\'API des communes à partir de 3 caractères', async () => {
         renderWithProviders(<SearchComponent/>);
         fireEvent.change(screen.getByRole('combobox'), {
             target: {value: 'Lyo'},
         });
-        await waitFor(() => expect(mockSearch).toHaveBeenCalled());
+        await waitFor(() => expect(mockSearchCommunes).toHaveBeenCalledWith({nom: 'Lyo'}));
     });
 });
