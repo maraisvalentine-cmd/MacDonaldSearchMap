@@ -159,13 +159,15 @@ Fonctionnalité: Détails du restaurant sélectionné
 
   # composant: SelectionDetails
   # étape: selection-details
-  # champ: details_empty_label
-  # selector: [data-testid=selection-empty]
-  # intercept-required: GET lookup en erreur 500
+  # champ: details_error
+  # selector: [data-testid=selection-error]
+  # intercept-required: GET lookup en erreur 429
   # [CONDITIONNEL]
-  # render: onError de mutateDetails, address reste null
-  Scénario: Une erreur de l'API de détails laisse le bandeau vide
-    Soit l'API de détails répond une erreur
+  # render: mutateDetails.isError avec un restaurant sélectionné
+  Scénario: Une erreur de l'API de détails affiche un message d'erreur
+    Soit l'API de détails répond une erreur 429
     Et j'ai lancé la recherche de restaurants pour "Lyon"
     Quand j'ai choisi le restaurant numéro 1
-    Alors le bandeau indique "Aucun restaurant sélectionné"
+    Alors le bandeau affiche l'erreur "Impossible de récupérer les détails du restaurant"
+    Et les détails sont masqués
+    Et le bouton "Continuer" n'est pas affiché

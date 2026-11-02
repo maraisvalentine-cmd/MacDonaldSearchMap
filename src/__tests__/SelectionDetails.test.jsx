@@ -69,6 +69,18 @@ describe('SelectionDetails', () => {
             expect(screen.getByRole('continue')).not.toBeNull();
         });
 
+        it('affiche un message d\'erreur quand la recherche des détails échoue', async () => {
+            const store = mapStore;
+            mockLookup.mockRejectedValueOnce(new Error('Request failed with status code 429'));
+            store.dispatch(setSelectedRestaurant(mockRestaurantComplet));
+            renderWithProviders(<SelectionDetails/>, {store});
+
+            const element = await screen.findByTestId('selection-error');
+            expect(element.textContent).toContain('Impossible de récupérer les détails du restaurant');
+            expect(screen.queryByRole('continue')).toBeNull();
+            expect(screen.queryByText('Aucun restaurant sélectionné')).toBeNull();
+        });
+
         it('vide les détails au clic sur close', () => {
             const store = mapStore;
             store.dispatch(setSelectedRestaurant(mockRestaurantComplet));

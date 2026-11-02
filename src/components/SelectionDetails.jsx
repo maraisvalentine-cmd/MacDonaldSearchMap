@@ -54,12 +54,19 @@ export default function SelectionDetails() {
         }
     }, [restaurant]);
 
+    // En cas d'erreur, on n'affiche pas les détails d'un éventuel restaurant précédent.
+    const hasError = Boolean(restaurant?.osm_id) && mutateDetails.isError;
+    const showDetails = address && !hasError;
+
     return (
         <div className="absolute w-full bottom-0 z-10" data-testid="selection-details">
             <div className="mt-2 px-2 py-2 rounded-t-lg bg-slate-50">
-                {!address && <span className="font-bold" data-testid="selection-empty">Aucun restaurant sélectionné</span>}
+                {hasError && <span className="font-bold text-red-700" role="alert" data-testid="selection-error">
+                    Impossible de récupérer les détails du restaurant. Réessayez dans quelques instants.
+                </span>}
+                {!hasError && !address && <span className="font-bold" data-testid="selection-empty">Aucun restaurant sélectionné</span>}
 
-                {address &&
+                {showDetails &&
                     <div>
                         <div>
                             <span className="font-bold" data-testid="selection-title">Restaurant sélectionné

@@ -35,3 +35,6 @@ export const stubLookup = (response = {fixture: 'lookup-restaurant.json'}) =>
     }, response).as('lookup');
 
 export const serverError = {statusCode: 500, body: {}};
+
+/** Nominatim répond 429 quand la limite de débit de sa politique d'usage est dépassée. */
+export const tooManyRequests = {statusCode: 429, body: {}};

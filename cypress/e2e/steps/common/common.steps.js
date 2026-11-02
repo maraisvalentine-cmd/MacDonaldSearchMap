@@ -1,5 +1,5 @@
 import {Given, Then} from '@badeball/cypress-cucumber-preprocessor';
-import {serverError, stubCitySearch, stubLookup, stubRestaurantsSearch, stubTiles} from './common.intercepts';
+import {serverError, stubCitySearch, stubLookup, stubRestaurantsSearch, stubTiles, tooManyRequests} from './common.intercepts';
 import {FIELDS as SEARCH} from '../search-city/search-city.fields';
 import {FIELDS as MAP} from '../map-view/map-view.fields';
 
@@ -30,8 +30,8 @@ Given('l\'API de détails retourne un restaurant sans site web', () => {
     stubLookup({fixture: 'lookup-without-website.json'});
 });
 
-Given('l\'API de détails répond une erreur', () => {
-    stubLookup(serverError);
+Given('l\'API de détails répond une erreur 429', () => {
+    stubLookup(tooManyRequests);
 });
 
 Given('j\'ai lancé la recherche de restaurants pour {string}', (city) => {

@@ -5,6 +5,10 @@ Then('le bandeau indique {string}', (title) => {
     cy.get(FIELDS['Titre du bandeau']).should('be.visible').and('contain', title);
 });
 
+Then('le bandeau affiche l\'erreur {string}', (message) => {
+    cy.get(FIELDS['Message d\'erreur']).should('be.visible').and('contain', message);
+});
+
 Then('les détails contiennent {string}', (text) => {
     cy.get(FIELDS['Détails']).should('contain', text);
 });
