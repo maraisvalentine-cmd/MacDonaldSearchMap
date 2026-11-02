@@ -6,7 +6,7 @@ import closeLogo from '../assets/close.svg';
 import chevronDownLogo from '../assets/chevron-down.svg';
 import chevronUpLogo from '../assets/chevron-up.svg';
 import {useMutation} from '@tanstack/react-query';
-import {useLookupRestaurant} from '../useApi.js';
+import {lookupRestaurant} from '../useApi.js';
 
 /**
  * Un bandeau d'affichage des détails du restaurant sélectionné.
@@ -19,7 +19,7 @@ export default function SelectionDetails() {
     const dispatch = useDispatch();
 
     const mutateDetails = useMutation({
-        mutationFn: (osmIds) => useLookupRestaurant(osmIds),
+        mutationFn: (osmIds) => lookupRestaurant(osmIds),
         onSuccess: data => {
             setAddress(data.address);
             setExtraData(data.extratags);
@@ -67,21 +67,21 @@ export default function SelectionDetails() {
                                     <button className="absolute right-6"
                                             role="hide"
                                             data-testid="selection-hide"
-                                            onClick={e => setHide(true)}>
+                                            onClick={() => setHide(true)}>
                                         <img src={chevronDownLogo} className="h-4 w-4" alt="Hide"/>
                                     </button>}
                                 {!hide &&
                                     <button className="absolute right-0"
                                             role="close"
                                             data-testid="selection-close"
-                                            onClick={e => dispatch(resetSelectedRestaurant())}>
+                                            onClick={() => dispatch(resetSelectedRestaurant())}>
                                         <img src={closeLogo} className="h-4 w-4" alt="Close"/>
                                     </button>
                                 }
                                 {hide && <button className="absolute right-0"
                                                  role="show"
                                                  data-testid="selection-show"
-                                                 onClick={e => setHide(false)}>
+                                                 onClick={() => setHide(false)}>
                                     <img src={chevronUpLogo} className="h-4 w-4" alt="Show"/>
                                 </button>
                                 }</span>

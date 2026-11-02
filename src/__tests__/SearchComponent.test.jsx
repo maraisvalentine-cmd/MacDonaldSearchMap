@@ -1,4 +1,3 @@
-import {search} from '../services/nominatimApi.js';
 import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import SearchComponent from '../components/SearchComponent.jsx';

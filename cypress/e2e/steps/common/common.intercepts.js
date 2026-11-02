@@ -8,7 +8,7 @@ export const stubTiles = () =>
         body: '',
     });
 
-/** Recherche de ville : GET search avec featureType=city (cf. useSearchCity). */
+/** Recherche de ville : GET search avec featureType=city (cf. searchCity). */
 export const stubCitySearch = (response = {fixture: 'cities.json'}) =>
     cy.intercept({
         method: 'GET',
@@ -17,7 +17,7 @@ export const stubCitySearch = (response = {fixture: 'cities.json'}) =>
         query: {featureType: 'city'},
     }, response).as('searchCity');
 
-/** Recherche de restaurants : GET search avec amenity=McDonald (cf. useSearchRestaurants). */
+/** Recherche de restaurants : GET search avec amenity=McDonald (cf. searchRestaurants). */
 export const stubRestaurantsSearch = (response = {fixture: 'restaurants.json'}) =>
     cy.intercept({
         method: 'GET',
@@ -26,7 +26,7 @@ export const stubRestaurantsSearch = (response = {fixture: 'restaurants.json'}) 
         query: {amenity: 'McDonald'},
     }, response).as('searchRestaurants');
 
-/** Détails d'un restaurant : GET lookup (cf. useLookupRestaurant). */
+/** Détails d'un restaurant : GET lookup (cf. lookupRestaurant). */
 export const stubLookup = (response = {fixture: 'lookup-restaurant.json'}) =>
     cy.intercept({
         method: 'GET',

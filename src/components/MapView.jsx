@@ -7,7 +7,7 @@ import {doSearch, resetSearch} from '../reducers/searchingSlice.js';
 import {setPosition} from '../reducers/positionSlice.js';
 import {setRestaurantsList} from '../reducers/restaurantsListSlice.js';
 import {useMutation} from '@tanstack/react-query';
-import {useSearchRestaurants} from '../useApi.js';
+import {searchRestaurants} from '../useApi.js';
 
 export default function MapView() {
     const mapSearch = useSelector(state => state.mapSearch.value);
@@ -16,7 +16,7 @@ export default function MapView() {
     const dispatch = useDispatch();
 
     const mutateRestaurantsList = useMutation({
-        mutationFn: (viewbox) => useSearchRestaurants(viewbox),
+        mutationFn: (viewbox) => searchRestaurants(viewbox),
         onSuccess: data => dispatch(setRestaurantsList(data)),
         onError: error => console.log(error)
     });

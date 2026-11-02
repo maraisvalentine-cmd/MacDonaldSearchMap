@@ -7,7 +7,6 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 export function renderWithProviders(ui, extendedRenderOptions = {}) {
     const {
-        preloadedState = {},
         store = mapStore,
         queryClient = new QueryClient({defaultOptions: {queries: {retry: false}, mutations: {retry: false}}}),
         ...renderOptions

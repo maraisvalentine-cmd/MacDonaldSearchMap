@@ -9,7 +9,7 @@ import {setSelectedRestaurant} from '../reducers/selectedRestaurantSlice.js';
 export default function MarkerPopUp({restaurant}) {
     const dispatch = useDispatch();
     const handleClick = useCallback(() =>
-        dispatch(setSelectedRestaurant(restaurant)), [restaurant]
+        dispatch(setSelectedRestaurant(restaurant)), [dispatch, restaurant]
     )
 
     return (<Popup>

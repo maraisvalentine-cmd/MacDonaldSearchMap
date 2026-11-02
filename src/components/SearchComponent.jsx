@@ -4,7 +4,7 @@ import searchLogo from '../assets/search.svg';
 import {doSearch} from '../reducers/searchingSlice.js';
 import {useDispatch} from 'react-redux';
 import {setPosition} from '../reducers/positionSlice.js';
-import {useSearchCity} from '../useApi.js';
+import {searchCity} from '../useApi.js';
 import {useMutation} from '@tanstack/react-query';
 
 /**
@@ -18,7 +18,7 @@ export default function SearchComponent() {
     const dispatch = useDispatch();
 
     const mutateCity = useMutation({
-        mutationFn: (c) => useSearchCity(c),
+        mutationFn: (c) => searchCity(c),
         onSuccess: data => {
             setMenuOpen(true);
             setPossibleCities(data.map(r => ({value: r, label: r.display_name})));

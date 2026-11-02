@@ -1,5 +1,5 @@
 # language: fr
-# Brouillon dérivé du code (SearchComponent.jsx, useApi.js) : scénarios à valider par un humain.
+# Brouillon dérivé du code (SearchComponent.jsx, useApi.js, searchCity) : scénarios à valider par un humain.
 Fonctionnalité: Recherche de ville
   Pour centrer la carte sur une ville de France
   En tant qu'utilisateur
