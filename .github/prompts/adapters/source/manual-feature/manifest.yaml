@@ -1,0 +1,25 @@
+# Adapter SOURCE de REPLI — manual-feature.
+# ⚠️ Ne fait PAS de rattrapage "à partir du code" : il n'écrit aucun scénario. C'est le cas
+# dégénéré où TU as déjà tes .feature — il se contente de les INDEXER dans un pivot minimal
+# (steps/fields VIDES) pour que le target les implémente et les lance.
+# Conséquence assumée : l'audit de couverture est alors trivial (aucun champ à croiser) et le
+# target générique produit des step defs squelette.
+#
+# Pour du VRAI rattrapage from-code, utiliser un adapter qui LIT le code :
+#   - angular-components      (composants Angular)
+#
+# manual-feature reste la source du profil `default` uniquement parce que c'est le seul
+# adapter framework-agnostique exécutable SANS configuration (fallback zéro-config).
+
+id: manual-feature
+kind: source
+engineRange: ">=1.0 <2.0"
+
+produces: [pivot@1]
+
+provides:
+  steps: [extract]          # pas de `custom` : les .feature sont écrits à la main
+
+inputs:
+  - paths.front_root
+  - paths.features_output_dir   # dossier où se trouvent les .feature fournis

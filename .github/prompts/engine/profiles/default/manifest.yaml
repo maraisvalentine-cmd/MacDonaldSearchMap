@@ -1,0 +1,33 @@
+# Profil par défaut de l'engine Shugyo.
+#
+# C'est LUI qui garantit que « shugyo sans surcharge » fonctionne : si un
+# .shugyo.yaml ne déclare aucun `profile:`, l'engine charge ce profil.
+# Il ne présuppose aucun produit, framework ni source de configuration.
+#
+# Cascade de résolution (le dernier gagne) :
+#   engine/profiles/default  →  adapters du profil choisi  →  overlay  →  .shugyo.yaml du projet
+
+id: default
+engineRange: ">=1.0 <2.0"
+
+profile:
+  # Source de REPLI framework-agnostique : indexe des .feature déjà écrits (ne génère RIEN
+  # depuis le code). C'est le seul adapter exécutable sans configuration → il sert de défaut.
+  # Pour du vrai rattrapage "from code", déclare explicitement profile.source dans .shugyo.yaml :
+  #   angular-components (Angular)
+  source: manual-feature
+  # Target générique : Cypress + Cucumber, sans hypothèse sur le framework front.
+  target: cypress-cucumber
+
+# Taxonomie de scénarios MINIMALE. Un profil riche la surcharge via son
+# adapter source (scenario-groups.yaml). L'audit lit cette liste au lieu de la
+# coder en dur — c'est ce qui permet à un projet nu de tourner.
+scenario_groups:
+  - nominal
+
+# Aucun catalogue de patterns feedback ni de mutations par défaut : le mécanisme
+# existe dans l'engine, mais sans stack de test spécifique il n'y a rien à injecter.
+# (Un adapter target fournit ses patterns et mutations via son manifeste.)
+catalogs:
+  feedback_patterns: []
+  mutations: []

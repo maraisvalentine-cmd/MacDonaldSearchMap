@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shugyo.dev/contracts/pivot.schema.json",
+  "title": "Shugyo pivot — schéma de base (générique)",
+  "description": "Contrat MINIMAL que tout adapter source doit émettre. Ne décrit que le noyau générique dont l'engine (audit / cypress-gen / feedback / mutation) dépend réellement. Tout le reste (data_type, render.wrapper_selector, callbacks, constraints, rules…) est une EXTENSION de profil : autorisée partout via additionalProperties, jamais requise ici. Un profil peut resservir via un overlay stricter (fichier pivot.overlay.schema.json dans le dossier de l'adapter) validé en plus de ce schéma par verify-adapter.",
+  "type": "object",
+  "required": ["version", "produit", "steps", "fields", "scenarios_index"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "description": "Version du format pivot. L'engine vérifie la compat via engineRange du manifeste d'adapter.",
+      "type": "integer",
+      "const": 1
+    },
+    "produit": {
+      "description": "Identifiant du sujet couvert (nom de l'app ou de la feature). Le mot reste 'produit' pour compat ascendante — c'est un simple id.",
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "ISO 8601. Optionnel."
+    },
+    "source": {
+      "description": "EXTENSION de profil : d'où viennent les métadonnées (fichiers ou services d'où viennent les métadonnées). Forme libre.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "steps": {
+      "description": "Groupements de champs testables (étapes d'un formulaire, pages). Le noyau générique n'exige que slug/label/order/fields.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "fields": {
+      "description": "Unités testables. C'est ce que cypress-gen consomme pour générer les sélecteurs sans inférer.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/field" }
+    },
+    "callbacks": {
+      "description": "EXTENSION de profil : logique dynamique (callbacks de visibilité, de valeur, de validation). Forme libre.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "fixtures": {
+      "description": "Données de test disponibles / à synthétiser / manquantes. Optionnel mais consommé par cypress-gen si présent.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "preprod_available": { "type": "array", "items": { "type": "string" } },
+        "synthetic_required": { "type": "array", "items": { "type": "string" } },
+        "missing": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "scenarios_to_generate": {
+      "description": "Compteurs par catégorie de scénario. Clés OUVERTES : la taxonomie (nominal/interaction/…) est déclarée par le profil, pas figée ici. Le profil 'default' n'a qu'une catégorie minimale.",
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "scenarios_index": {
+      "description": "Un enregistrement par scénario généré. Consommé par audit-coverage pour le mapping inverse champ → scénarios.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/scenarioIndexEntry" }
+    }
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "required": ["slug", "label", "order", "fields"],
+      "additionalProperties": true,
+      "properties": {
+        "slug": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "order": { "type": "integer" },
+        "fields": {
+          "description": "technical_name des champs de cette étape ; doivent exister dans fields[].",
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["technical_name", "label", "step_slug", "required", "render", "fixture_field_path"],
+      "additionalProperties": true,
+      "properties": {
+        "technical_name": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "step_slug": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "data_type": {
+          "description": "EXTENSION recommandée : type du champ. Enum OUVERT (string) — ex. TEXT/NUMBER/DATE ; chaque profil met ses propres valeurs.",
+          "type": "string"
+        },
+        "render": {
+          "description": "Ce qui permet à cypress-gen de générer le bon sélecteur sans deviner. Le noyau n'exige que selector + interaction_method.",
+          "type": "object",
+          "required": ["selector", "interaction_method"],
+          "additionalProperties": true,
+          "properties": {
+            "selector": { "type": "string", "minLength": 1 },
+            "interaction_method": { "type": "string", "minLength": 1 },
+            "wrapper_selector": { "type": ["string", "null"] }
+          }
+        },
+        "fixture_field_path": {
+          "description": "JSONPath du champ dans la fixture (défaut: '[technical_name].value').",
+          "type": "string"
+        }
+      }
+    },
+    "scenarioIndexEntry": {
+      "type": "object",
+      "required": ["feature_file", "scenario_line", "scenario_name", "covers_field", "covers_step", "category"],
+      "additionalProperties": true,
+      "properties": {
+        "feature_file": {
+          "description": "Chemin relatif au front_root.",
+          "type": "string",
+          "minLength": 1
+        },
+        "scenario_line": { "type": "integer", "minimum": 1 },
+        "scenario_name": { "type": "string" },
+        "covers_field": {
+          "description": "technical_name du champ ciblé ; doit exister dans fields[].",
+          "type": "string"
+        },
+        "covers_step": { "type": "string" },
+        "category": {
+          "description": "Valeur de l'annotation # [CATEGORY]. String OUVERT — la taxonomie appartient au profil.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

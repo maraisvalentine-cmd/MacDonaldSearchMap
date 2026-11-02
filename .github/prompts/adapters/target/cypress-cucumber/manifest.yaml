@@ -1,0 +1,21 @@
+# Adapter TARGET par défaut — cypress-cucumber (générique).
+# Génère des step definitions Cypress + Cucumber directement depuis les steps Gherkin,
+# SANS hypothèse sur le framework front (pas de sélecteur propre à une librairie, pas de pivot.fields requis).
+#
+# C'est le target du profil `default`.
+
+id: cypress-cucumber
+kind: target
+engineRange: ">=1.0 <2.0"
+
+provides:
+  steps: [generate]
+  # Pas de catalogue feedback/mutations par défaut : le mécanisme existe dans l'engine,
+  # mais sans stack précise il n'y a pas de recettes à injecter.
+  catalogs:
+    feedback_patterns: []
+    mutations: []
+
+inputs:
+  - paths.front_root
+  - run.command                    # générique (lu par l'engine au step run)

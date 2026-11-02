@@ -1,0 +1,16 @@
+# Defaults de l'adapter target cypress, fusionnés dans la cascade de config
+# (engine/profiles/default → CE FICHIER → overlay → .shugyo.yaml). Voir engine/README.md.
+
+# Commande de run par défaut (lue par l'engine au step `run`). Interpole {front_root}.
+# start-server-and-test lance le dev server puis Cypress, et attend le port. Valeurs Angular par défaut :
+# le step `setup` les remplace par celles du projet (Vite : 5173, Create React App : 3000).
+run:
+  command: "npx start-server-and-test start http://localhost:4200 'cypress run'"
+  cwd: "{front_root}"
+  # Relance ciblée (mutation-validate) : {files_csv} = features séparées par des virgules.
+  targeted: "npx start-server-and-test start http://localhost:4200 'cypress run --spec {files_csv}'"
+
+# Où feedback-loop lit les rapports mochawesome (json).
+feedback:
+  reports_dir: cypress/reports
+  report_format: mochawesome

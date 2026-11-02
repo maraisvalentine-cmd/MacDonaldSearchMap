@@ -1,0 +1,35 @@
+# Adapter SOURCE — java-rest-controllers.
+# Écrit les scénarios Gherkin MÉTIER À PARTIR DU CODE d'une API Java (contrôleurs Spring MVC ou
+# JAX-RS/Quarkus), puis émet le pivot.json que le target `cucumber-java-rest` implémentera.
+# Le catalogue de chaque framework (annotations, chemin de base, sécurité) vit dans `catalogs/`.
+#
+# Modélisation dans le pivot : une ressource (contrôleur) = un `step`, un endpoint = un `field`
+# (`render.interaction_method: http-call`). Le détail HTTP d'un endpoint est une extension `http`
+# (voir pivot.overlay.schema.json). Le front n'est pas affecté : le schéma de base reste inchangé.
+
+id: java-rest-controllers
+kind: source
+engineRange: ">=1.0 <2.0"
+
+produces: [pivot@1, features]
+
+provides:
+  steps: [extract]
+  annotations: annotations.md
+  catalogs:
+    scenario_groups: catalogs/scenario-groups.yaml
+    frameworks:
+      spring-mvc: catalogs/spring-mvc.md
+      jax-rs: catalogs/jax-rs.md
+
+# Ce que cet adapter sait SCOPER (cf. bloc `scope:` de .shugyo.yaml). Sans scope → toute l'API.
+scope_selectors: [resource, package]
+
+# Overlay qui resserre le pivot : `http` requis sur chaque endpoint.
+pivot_overlay: pivot.overlay.schema.json
+
+inputs:
+  - paths.front_root          # racine du projet testé (le module back, pour une API)
+  - paths.java_root           # racine des sources Java (défaut: src/main/java)
+  - paths.features_output_dir # où écrire les .feature (détecté si des features existent déjà)
+  - api.framework             # auto (défaut) | spring-mvc | jax-rs

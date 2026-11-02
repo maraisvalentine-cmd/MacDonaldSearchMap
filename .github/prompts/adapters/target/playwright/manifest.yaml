@@ -1,0 +1,23 @@
+# Adapter TARGET — playwright.
+# Implémente les scénarios en tests Playwright pilotés par Gherkin (playwright-bdd) : consomme
+# pivot.fields[].render (sélecteur + interaction_method) pour générer des step definitions
+# exécutables. Indépendant du framework front : Angular, React ou autre, tant que la source
+# émet un pivot valide. Même pivot et mêmes .feature que `cypress` (le choix de l'outil
+# de test se fait dans .shugyo.yaml, pas dans la source).
+
+id: playwright
+kind: target
+engineRange: ">=1.0 <2.0"
+
+provides:
+  steps: [generate, setup]     # generate.prompt.md + setup.prompt.md
+  catalogs:
+    feedback_patterns: catalogs/feedback-patterns.md
+    mutations: catalogs/mutations.yaml
+
+inputs:
+  - run.command                        # générique (lu par l'engine au step run)
+  - paths.front_root
+  - paths.features_output_dir
+  - paths.steps_output_dir
+  - playwright.config_file             # config Playwright du projet (défaut: playwright.config.ts)
