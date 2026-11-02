@@ -1,6 +1,6 @@
 export const FIELDS = {
-    'Libellé de recherche': 'form label',
-    'Champ de recherche de ville': 'form input[role=combobox]',
-    'Suggestion de ville': '[id^="react-select-"][id*="-option-"]',
-    'Bouton de recherche': 'form button[type=submit]',
+    'Libellé de recherche': '[data-testid=search-label]',
+    'Champ de recherche de ville': '[data-testid=search-city-select] input[role=combobox]',
+    'Suggestion de ville': '[data-testid=search-city-select] [role=option]',
+    'Bouton de recherche': '[data-testid=search-submit]',
 };

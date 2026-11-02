@@ -2,7 +2,7 @@ import {Then, When} from '@badeball/cypress-cucumber-preprocessor';
 import {FIELDS} from './selection-details.fields';
 
 Then('le bandeau indique {string}', (title) => {
-    cy.contains(FIELDS['Titre du bandeau'], title).should('be.visible');
+    cy.get(FIELDS['Titre du bandeau']).should('be.visible').and('contain', title);
 });
 
 Then('les détails contiennent {string}', (text) => {

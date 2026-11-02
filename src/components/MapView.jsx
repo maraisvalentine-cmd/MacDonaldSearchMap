@@ -57,18 +57,20 @@ export default function MapView() {
     }
 
     return (
-        <MapContainer
-            center={position}
-            zoom={13}
-            scrollWheelZoom={false}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-            <LocateAndSearch/>
-            <SearchRestaurants/>
-            <RecenterAutomaticallyAfterSearch/>
+        <div data-testid="map">
+            <MapContainer
+                center={position}
+                zoom={13}
+                scrollWheelZoom={false}>
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                <LocateAndSearch/>
+                <SearchRestaurants/>
+                <RecenterAutomaticallyAfterSearch/>
 
-            <RestaurantMarkers/>
-        </MapContainer>
+                <RestaurantMarkers/>
+            </MapContainer>
+        </div>
     );
 }

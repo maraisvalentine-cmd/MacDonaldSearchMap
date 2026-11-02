@@ -1,6 +1,5 @@
 # language: fr
 # Brouillon dérivé du code (MapView.jsx, RestaurantMarkers.jsx, MarkerPopUp.jsx) : scénarios à valider par un humain.
-# TODO(testid): rendu Leaflet, sélecteurs de repli sur les classes .leaflet-* et la popup.
 Fonctionnalité: Carte et marqueurs de restaurants
   Pour repérer les restaurants autour d'une ville
   En tant qu'utilisateur
@@ -13,7 +12,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # composant: MapView
   # étape: map-view
   # champ: map_container
-  # selector: .leaflet-container
+  # selector: [data-testid=map] .leaflet-container
   # [NOMINAL]
   Scénario: La carte est affichée à l'ouverture
     Alors je vois la carte
@@ -22,7 +21,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # composant: RestaurantMarkers
   # étape: map-view
   # champ: map_marker
-  # selector: .leaflet-marker-icon
+  # selector: [data-testid=map] .leaflet-marker-icon
   # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
   # [LISTE]
   # render: restaurants.map, un Marker par restaurant
@@ -33,7 +32,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # composant: RestaurantMarkers
   # étape: map-view
   # champ: map_marker
-  # selector: .leaflet-marker-icon
+  # selector: [data-testid=map] .leaflet-marker-icon
   # intercept-required: GET search (amenity=McDonald) avec une liste vide
   # [CONDITIONNEL]
   # render: restaurants && restaurants.map, liste vide
@@ -45,7 +44,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # composant: MarkerPopUp
   # étape: map-view
   # champ: map_popup_name
-  # selector: .leaflet-popup-content div.font-bold
+  # selector: [data-testid=popup-name]
   # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
   # [NOMINAL]
   Scénario: Cliquer un marqueur ouvre la popup du restaurant
@@ -57,7 +56,7 @@ Fonctionnalité: Carte et marqueurs de restaurants
   # composant: MarkerPopUp
   # étape: map-view
   # champ: map_popup_choose
-  # selector: .leaflet-popup-content button
+  # selector: [data-testid=popup-choose]
   # intercept-required: GET lookup
   # [NOMINAL]
   Scénario: Choisir un restaurant dans la popup lance la recherche de ses détails

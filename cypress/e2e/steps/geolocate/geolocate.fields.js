@@ -1,3 +1,3 @@
 export const FIELDS = {
-    'Bouton de géolocalisation': 'button[role=geolocate]',
+    'Bouton de géolocalisation': '[data-testid=geolocate-button]',
 };

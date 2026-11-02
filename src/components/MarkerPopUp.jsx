@@ -13,8 +13,9 @@ export default function MarkerPopUp({restaurant}) {
     )
 
     return (<Popup>
-        <div className="text-l text-center font-bold mb-10 ">{restaurant.display_name}</div>
+        <div className="text-l text-center font-bold mb-10 " data-testid="popup-name">{restaurant.display_name}</div>
         <button
+            data-testid="popup-choose"
             className="absolute bottom-2 right-2 w-24 rounded-lg font-light text-sm bg-contain bg-yellow-400 hover:bg-yellow-200 hover:border-2"
             onClick={handleClick}>Choisir</button>
     </Popup>);

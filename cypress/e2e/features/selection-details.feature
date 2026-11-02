@@ -1,6 +1,5 @@
 # language: fr
 # Brouillon dérivé du code (SelectionDetails.jsx) : scénarios à valider par un humain.
-# TODO(testid): boutons repérés par leur attribut role (hide, close, show, continue), reste en sélecteurs de repli.
 Fonctionnalité: Détails du restaurant sélectionné
   Pour consulter l'adresse et les informations d'un restaurant
   En tant qu'utilisateur
@@ -13,7 +12,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_empty_label
-  # selector: span.font-bold
+  # selector: [data-testid=selection-empty]
   # render: !address, aucun restaurant sélectionné
   # [NOMINAL]
   Scénario: Aucun restaurant n'est sélectionné à l'ouverture
@@ -22,7 +21,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_address
-  # selector: .grid > div:first-child
+  # selector: [data-testid=selection-address]
   # intercept-required: GET lookup (osm_ids=W11111111)
   # [NOMINAL]
   Scénario: Choisir un restaurant affiche son adresse
@@ -37,7 +36,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_address
-  # selector: .grid > div:first-child
+  # selector: [data-testid=selection-address]
   # intercept-required: GET lookup (osm_ids=W11111111)
   # [CONDITIONNEL]
   # render: osm_type way converti en W
@@ -49,7 +48,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_address
-  # selector: .grid > div:first-child
+  # selector: [data-testid=selection-address]
   # intercept-required: GET lookup (osm_ids=N22222222)
   # [CONDITIONNEL]
   # render: osm_type autre que way ou relation converti en N
@@ -61,7 +60,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_phone
-  # selector: .grid > div:nth-child(2)
+  # selector: [data-testid=selection-contact]
   # intercept-required: GET lookup
   # [CONDITIONNEL]
   # render: extraData.phone && ..., extraData.opening_hours && ...
@@ -76,7 +75,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_hours
-  # selector: .grid > div:nth-child(2)
+  # selector: [data-testid=selection-contact]
   # intercept-required: GET lookup sans phone, opening_hours ni suburb
   # [CONDITIONNEL]
   # render: extraData.phone && ..., extraData.opening_hours && ..., address.suburb && ...
@@ -91,7 +90,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_hide
-  # selector: button[role=hide]
+  # selector: [data-testid=selection-hide]
   # intercept-required: GET lookup
   # [CONDITIONNEL]
   # render: hide ? bouton show : boutons hide et close
@@ -107,7 +106,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_show
-  # selector: button[role=show]
+  # selector: [data-testid=selection-show]
   # intercept-required: GET lookup
   # [CONDITIONNEL]
   # render: hide=false après clic sur show
@@ -122,7 +121,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_close
-  # selector: button[role=close]
+  # selector: [data-testid=selection-close]
   # intercept-required: GET lookup
   # [CONDITIONNEL]
   # render: resetSelectedRestaurant, retour à !address
@@ -135,7 +134,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_continue
-  # selector: a:has(button[role=continue])
+  # selector: [data-testid=selection-continue-link]
   # route: lien externe extraData.website
   # intercept-required: GET lookup
   # [NAVIGATION]
@@ -148,10 +147,10 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_continue
-  # selector: a:has(button[role=continue])
+  # selector: [data-testid=selection-continue-link]
   # intercept-required: GET lookup sans website
   # [CONDITIONNEL]
-  # TODO(testid): comportement sans site web à confirmer avec le métier, le code passe to=undefined à Link.
+  # À confirmer avec le métier : sans site web, le code passe to=undefined à Link.
   Scénario: Le bouton Continuer reste affiché sans site web
     Soit l'API de détails retourne un restaurant sans site web
     Et j'ai lancé la recherche de restaurants pour "Lyon"
@@ -161,7 +160,7 @@ Fonctionnalité: Détails du restaurant sélectionné
   # composant: SelectionDetails
   # étape: selection-details
   # champ: details_empty_label
-  # selector: span.font-bold
+  # selector: [data-testid=selection-empty]
   # intercept-required: GET lookup en erreur 500
   # [CONDITIONNEL]
   # render: onError de mutateDetails, address reste null

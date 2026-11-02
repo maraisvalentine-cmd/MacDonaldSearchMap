@@ -1,6 +1,5 @@
 # language: fr
 # Brouillon dérivé du code (SearchComponent.jsx, useApi.js) : scénarios à valider par un humain.
-# TODO(testid): aucun attribut data-* de test dans SearchComponent, sélecteurs de repli (role, type, id react-select).
 Fonctionnalité: Recherche de ville
   Pour centrer la carte sur une ville de France
   En tant qu'utilisateur
@@ -13,7 +12,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_label
-  # selector: form label
+  # selector: [data-testid=search-label]
   # [NOMINAL]
   Scénario: Le formulaire de recherche est affiché
     Alors je vois le libellé "Rechercher un restaurant"
@@ -23,7 +22,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_input
-  # selector: form input[role=combobox]
+  # selector: [data-testid=search-city-select] input[role=combobox]
   # intercept-required: GET search (featureType=city)
   # [CONDITIONNEL]
   # render: handlePossibilities, c.length > 2 sinon menu fermé
@@ -35,7 +34,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_input
-  # selector: form input[role=combobox]
+  # selector: [data-testid=search-city-select] input[role=combobox]
   # intercept-required: GET search (featureType=city)
   # [CONDITIONNEL]
   # render: handlePossibilities, c.length > 2 déclenche mutateCity
@@ -47,7 +46,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_option
-  # selector: [id^="react-select-"][id*="-option-"]
+  # selector: [data-testid=search-city-select] [role=option]
   # intercept-required: GET search (featureType=city)
   # [LISTE]
   # render: possibleCities = data.map(r => label: r.display_name)
@@ -59,7 +58,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_input
-  # selector: form input[role=combobox]
+  # selector: [data-testid=search-city-select] input[role=combobox]
   # intercept-required: GET search (featureType=city)
   # [CONDITIONNEL]
   # render: menuIsOpen=isMenuOpen, repassé à false sous 3 caractères
@@ -73,7 +72,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_input
-  # selector: form input[role=combobox]
+  # selector: [data-testid=search-city-select] input[role=combobox]
   # intercept-required: GET search (featureType=city) en erreur 500
   # [CONDITIONNEL]
   # render: onError de mutateCity, le menu n'est pas ouvert
@@ -86,7 +85,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_submit
-  # selector: form button[type=submit]
+  # selector: [data-testid=search-submit]
   # intercept-required: GET search (featureType=city), GET search (amenity=McDonald)
   # [NOMINAL]
   Scénario: Valider une ville lance la recherche de restaurants
@@ -99,7 +98,7 @@ Fonctionnalité: Recherche de ville
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_submit
-  # selector: form button[type=submit]
+  # selector: [data-testid=search-submit]
   # [CONDITIONNEL]
   # render: handleSubmit, city.value undefined, exception attrapée par le try
   Scénario: Valider sans ville choisie ne lance aucune recherche

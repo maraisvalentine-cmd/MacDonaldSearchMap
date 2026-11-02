@@ -1,6 +1,5 @@
 # language: fr
 # Brouillon dérivé du code (GeolocateComponent.jsx, MapView.jsx) : scénarios à valider par un humain.
-# TODO(testid): bouton repéré par son attribut role=geolocate.
 Fonctionnalité: Géolocalisation
   Pour trouver les restaurants proches de ma position
   En tant qu'utilisateur
@@ -13,7 +12,7 @@ Fonctionnalité: Géolocalisation
   # composant: GeolocateComponent
   # étape: geolocate
   # champ: geolocate_button
-  # selector: button[role=geolocate]
+  # selector: [data-testid=geolocate-button]
   # [NOMINAL]
   Scénario: Le bouton de géolocalisation est affiché
     Alors je vois le bouton de géolocalisation
@@ -21,7 +20,7 @@ Fonctionnalité: Géolocalisation
   # composant: GeolocateComponent
   # étape: geolocate
   # champ: geolocate_button
-  # selector: button[role=geolocate]
+  # selector: [data-testid=geolocate-button]
   # intercept-required: GET search (amenity=McDonald)
   # [NOMINAL]
   # render: LocateAndSearch, locationfound déclenche setPosition puis doSearch
@@ -34,7 +33,7 @@ Fonctionnalité: Géolocalisation
   # composant: GeolocateComponent
   # étape: geolocate
   # champ: geolocate_button
-  # selector: button[role=geolocate]
+  # selector: [data-testid=geolocate-button]
   # [CONDITIONNEL]
   # render: locationerror non géré, aucune recherche lancée
   Scénario: Un refus de géolocalisation ne lance aucune recherche
