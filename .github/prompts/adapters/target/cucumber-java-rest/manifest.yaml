@@ -1,0 +1,29 @@
+# Adapter TARGET — cucumber-java-rest.
+# Implémente les scénarios d'une API REST Java en Cucumber-JVM : classes d'étapes, infrastructure de test
+# (runner, contexte, client REST, authentification, nettoyage de la base) et exécution via Maven ou Gradle.
+# Consomme le pivot émis par `java-rest-controllers` (chaque champ est un endpoint avec un bloc `http`).
+#
+# Les variantes Spring et Quarkus vivent dans `catalogs/` (détection, dépendances, runner, contexte) et
+# `templates/` (code d'infrastructure).
+# Le `setup` détecte l'infrastructure existante et ne génère QUE ce qui manque.
+
+id: cucumber-java-rest
+kind: target
+engineRange: ">=1.0 <2.0"
+
+provides:
+  steps: [setup, generate]     # setup.prompt.md + generate.prompt.md
+  catalogs:
+    feedback_patterns: catalogs/feedback-patterns.md
+    mutations: catalogs/mutations.yaml
+    frameworks:
+      spring: catalogs/spring.md
+      quarkus: catalogs/quarkus.md
+
+inputs:
+  - run.command                # Maven ou Gradle ; défaut détecté par le setup
+  - paths.front_root           # racine du module back (le projet testé)
+  - paths.features_output_dir  # où se trouvent / sont écrits les .feature
+  - paths.steps_output_dir     # racine Java des classes d'étapes (défaut: src/test/java)
+  - api.framework              # auto (défaut) | spring | quarkus (alias acceptés : spring-mvc, jax-rs)
+  - java.build_tool            # auto (défaut) | maven | gradle

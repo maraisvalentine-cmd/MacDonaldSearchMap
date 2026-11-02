@@ -4,7 +4,7 @@ import searchLogo from '../assets/search.svg';
 import {doSearch} from '../reducers/searchingSlice.js';
 import {useDispatch} from 'react-redux';
 import {setPosition} from '../reducers/positionSlice.js';
-import {useSearchCity} from '../useApi.js';
+import {searchCity} from '../useApi.js';
 import {useMutation} from '@tanstack/react-query';
 
 /**
@@ -18,7 +18,7 @@ export default function SearchComponent() {
     const dispatch = useDispatch();
 
     const mutateCity = useMutation({
-        mutationFn: (c) => useSearchCity(c),
+        mutationFn: (c) => searchCity(c),
         onSuccess: data => {
             setMenuOpen(true);
             setPossibleCities(data.map(r => ({value: r, label: r.display_name})));
@@ -52,9 +52,9 @@ export default function SearchComponent() {
         <div className="absolute top-0 left-12 z-10 md:left-16 w-4/6">
             <form className="mt-2 px-2 py-2 rounded-lg bg-slate-50 w-full md:w-96"
                   onSubmit={handleSubmit}>
-                <label className="font-semibold">Rechercher un restaurant</label>
+                <label className="font-semibold" data-testid="search-label">Rechercher un restaurant</label>
                 <div className="flex items-center">
-                    <div className="w-5/6">
+                    <div className="w-5/6" data-testid="search-city-select">
                         <Select name="city"
                                 onChange={setCity}
                                 options={possibleCities}
@@ -65,7 +65,8 @@ export default function SearchComponent() {
                     <div className="mx-2 w-1/8">
                         <button
                             className="py-1 border-2 border-black rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-200 hover:ring-4"
-                            type="submit">
+                            type="submit"
+                            data-testid="search-submit">
                             <img src={searchLogo} className="h-6 w-6" alt="Rechercher"/>
                         </button>
                     </div>

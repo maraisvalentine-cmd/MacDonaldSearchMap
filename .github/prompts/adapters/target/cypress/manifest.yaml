@@ -1,0 +1,25 @@
+# Adapter TARGET — cypress.
+# Implémente RÉELLEMENT les scénarios : consomme pivot.fields[].render (sélecteur +
+# interaction_method) pour générer des step definitions Cypress + Cucumber exécutables,
+# indépendamment du framework front (Angular, React) et SANS hypothèse sur une librairie de composants.
+# Pendant "implémente" des adapters source angular-components et react-components (pendant "écrit").
+#
+# À utiliser pour un projet Angular ou React. Un profil projet qui a besoin de sélecteurs
+# propres à sa librairie de composants fournit son propre target.
+
+id: cypress
+kind: target
+engineRange: ">=1.0 <2.0"
+
+provides:
+  steps: [generate, setup]     # generate.prompt.md + setup.prompt.md
+  catalogs:
+    feedback_patterns: catalogs/feedback-patterns.md   # patterns de fail Cypress (Angular, React)
+    mutations: catalogs/mutations.yaml                  # recettes de mutation (Angular, React)
+
+inputs:
+  - run.command                        # générique (lu par l'engine au step run)
+  - paths.front_root
+  - paths.features_output_dir
+  - paths.steps_output_dir
+  - cypress.cypress_config_file        # config Cypress du projet (spécifique target)

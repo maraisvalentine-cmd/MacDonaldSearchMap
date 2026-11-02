@@ -1,0 +1,116 @@
+# Catalogue de mutations : cypress (Angular et React). Chargé par l'agent générique mutation-validate
+# via manifest.provides.catalogs.mutations.
+#
+# Chaque entrée :
+#   id          : identifiant (M1..)
+#   family      : templates | services | fixtures (filtré par mutation.target_scope)
+#   target      : type de fichier ciblé
+#   expected    : killed | survived attendu
+#   description : recette (Localisation, Mutation old_string -> new_string, Champ ciblé, Signal attendu).
+#                 Une recette donne une variante Angular et une variante React ; appliquer celle du framework détecté.
+#
+# Les mutations touchent le code applicatif et les fixtures, jamais les .feature ni les steps.
+
+# Règle commune : `old_string` doit apparaître UNE seule fois dans le fichier (mutation-validate le vérifie).
+# S'il apparaît plusieurs fois, l'étendre au contexte minimal qui le rend unique (ligne voisine, verbe HTTP,
+# clé voisine). Sans pivot, repli de localisation : chercher l'attribut de test employé par les helpers de test
+# du projet (ex. `dataSelector.ts`) et croiser avec les specs.
+
+families: [templates, services, fixtures]
+
+mutations:
+  - id: M1
+    family: templates
+    target: "*.component.html (Angular), *.tsx (React)"
+    expected: killed
+    description: |
+      Renommage de l'attribut de test.
+      Origine : Pattern A (élément introuvable).
+      Localisation : parcourir `pivot.fields[].render.selector` ; chercher dans le code l'attribut correspondant : attribut natif (`data-testid="X"`, `data-selector="X"`…) ou, en JSX, prop d'un composant de design system qui produit l'attribut (`dataSelector="X"`). Le nom de l'attribut est celui du sélecteur du pivot. Choisir un attribut référencé par un step (`FIELDS[...]` dans `paths.steps_output_dir`).
+      Mutation : `data-testid="X"` -> `data-testid="X_mut"` (ou `dataSelector="X"` -> `dataSelector="X_mut"`), même attribut que le pivot.
+      Champ ciblé : le `technical_name` du pivot dont `render.selector` désigne cet attribut.
+      Signal attendu : `cy.get('[data-testid=X]')` en timeout (`Expected to find element … but never found it`).
+
+  - id: M2
+    family: templates
+    target: "*.component.html (Angular), *.tsx (React)"
+    expected: killed
+    description: |
+      Suppression d'un rendu conditionnel.
+      Origine : Pattern A (visibilité).
+      Localisation : Angular, `@if (cond) { … }` ou `*ngIf="cond"` qui garde un élément portant un attribut de test ; React, `{cond && <X data-testid="…" />}` ou ternaire `cond ? <X/> : null`. Privilégier les éléments du pivot de catégorie `conditionnel`.
+      Mutation : remplacer la condition par `true` (paire d'une ligne, sans toucher aux accolades) : `@if (cond) {` -> `@if (true) {`, `*ngIf="cond"` -> `*ngIf="true"`, `{cond && (` -> `{true && (`, `cond ? A : B` -> `true ? A : B`. Si la condition apparaît deux fois dans le fichier, ajouter la ligne suivante à `old_string`.
+      Champ ciblé : le champ du pivot dont le sélecteur est porté par l'élément gardé.
+      Signal attendu : l'assertion `should('not.exist')` d'un scénario `conditionnel` tombe.
+
+  - id: M3
+    family: templates
+    target: "*.component.html (Angular), *.tsx (React)"
+    expected: killed
+    description: |
+      Destination de navigation changée.
+      Origine : Pattern D (navigation inattendue).
+      Localisation : Angular, `routerLink="/x"`, `[routerLink]="'/x'"`, `this.router.navigate(['/x'])` ; React, `<Link to="/x">`, `<NavLink to="/x">`, `<Navigate to="/x" />`, `navigate('/x')` (y compris avec template literal). Croiser avec les `# route:` des scénarios de catégorie `navigation`. Une destination liée dynamiquement (`[routerLink]="entry.route"`) ne se mute pas par paire littérale : muter la source de la propriété.
+      Mutation : `/x` -> `/x_mut`.
+      Champ ciblé : le champ du pivot de `interaction_method: navigate` correspondant.
+      Signal attendu : `expected '…' to include '/x'` après le clic (`cy.url().should('include', …)`).
+
+  - id: M4
+    family: services
+    target: "*.service.ts (Angular), clients HTTP et hooks de données (React)"
+    expected: killed
+    description: |
+      Endpoint HTTP changé.
+      Origine : Pattern C (intercept non stubbé).
+      Localisation : appels recensés par les `# intercept-required:` des features. Angular : `this.http.get('/api/x')` dans un service ou un adaptateur `infrastructure/secondary`. React : `fetch('/api/x')`, `axios.get(…)`, `queryFn`, ou un client maison (`this.#fetcher.fetch('/api/x')` : chercher `\.fetch\(`). Une URL construite par un helper (`membersUrl(id)`) se mute dans le helper. Prendre un appel dont un stub existe (`cy.intercept(...)` dans `*.intercepts.ts` ou dans le module d'intercepts du projet).
+      Mutation : `/api/x` -> `/api/x_mut` ; si `/api/x` apparaît plusieurs fois (liste et création), ajouter le verbe voisin à `old_string`.
+      Champ ciblé : le champ du pivot affiché à partir de cette réponse.
+      Signal attendu : l'intercept ne correspond plus, la donnée attendue ne s'affiche pas, `cy.wait('@alias')` expire.
+
+  - id: M5
+    family: services
+    target: "*.service.ts (Angular), clients HTTP et hooks de données (React)"
+    expected: killed
+    description: |
+      Paramètre de requête supprimé.
+      Origine : Pattern C.
+      Localisation : appel HTTP avec query string : Angular, `new HttpParams().set('status', …)` ou littéral `?page=${…}&pageSize=${…}` ; React, `?status=${…}`, `params: { status }` ou option `query:` d'un client maison (`query: paginationToQuery(p)`). Choisir un paramètre que les scénarios de recherche exercent.
+      Mutation : retirer le paramètre de l'appel (ou la ligne `query:`).
+      Champ ciblé : le champ de filtre du pivot qui alimente ce paramètre.
+      Signal attendu : l'assertion sur la liste filtrée tombe.
+
+  - id: M6
+    family: services
+    target: "*.service.ts, *.component.ts (Angular), *.tsx, hooks (React)"
+    expected: killed
+    description: |
+      Condition d'activation inversée.
+      Origine : Pattern F (élément ambigu ou non actionnable).
+      Localisation : bouton désactivé selon une condition : Angular, `[disabled]="form.invalid"` (natif ou composant custom) ; React, `disabled={!isValid}` ou composée `disabled={a || b}`.
+      Mutation : inverser l'expression entière : `form.invalid` -> `form.valid`, `disabled={a || b}` -> `disabled={!(a || b)}`.
+      Champ ciblé : le champ du pivot de type bouton concerné.
+      Signal attendu : le clic échoue (`cy.click() failed because this element is disabled`) ou l'assertion `should('be.enabled')` tombe.
+
+  - id: M7
+    family: fixtures
+    target: "fixtures JSON"
+    expected: killed
+    description: |
+      Valeur d'une fixture mutée.
+      Origine : Pattern C (données).
+      Localisation : fichier de `paths.fixtures_dir` référencé par un `# fixture-required:` (JSON), ou factory TypeScript de données de test (`*.fixture.ts`) quand le projet n'a pas de JSON ; propriété de type chaîne affichée à l'écran.
+      Mutation : `"label": "Alpha"` -> `"label": "Alpha_mut"`, ou littéral de la factory (`name: \`Item ${i}\`` -> `name: \`Item_mut ${i}\``). Une valeur JSON est rarement unique : inclure la clé voisine dans `old_string`.
+      Champ ciblé : le champ du pivot dont `fixture_field_path` désigne cette propriété.
+      Signal attendu : une assertion `should('contain', 'Alpha')` tombe.
+
+  - id: M8
+    family: fixtures
+    target: "fixtures JSON"
+    expected: survived
+    description: |
+      Propriété de fixture non lue par l'écran, mutée.
+      Origine : angle mort attendu : une valeur que le front n'affiche pas ne doit pas faire tomber de test.
+      Localisation : propriété d'une fixture (JSON ou factory TypeScript) que ni le code applicatif ni les features ne lisent (croiser les champs de la fixture avec `fields[].fixture_field_path`) ; vérifier la non-lecture avant de muter.
+      Mutation : changer sa valeur.
+      Champ ciblé : aucun ; lancer les features qui utilisent la fixture.
+      Signal attendu : aucun test ne tombe (`survived`). Si un test tombe, l'assertion est trop large.

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "produit": "todo-app",
+  "steps": [],
+  "fields": [],
+  "scenarios_to_generate": { "nominal": 2 },
+  "scenarios_index": [
+    {
+      "feature_file": "features/add-task.feature",
+      "scenario_line": 6,
+      "scenario_name": "Une tâche ajoutée apparaît dans la liste",
+      "covers_field": "task_title",
+      "covers_step": "",
+      "category": "nominal"
+    },
+    {
+      "feature_file": "features/add-task.feature",
+      "scenario_line": 13,
+      "scenario_name": "Le champ titre est obligatoire",
+      "covers_field": "task_title",
+      "covers_step": "",
+      "category": "nominal"
+    }
+  ]
+}

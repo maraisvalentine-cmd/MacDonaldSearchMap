@@ -1,0 +1,12 @@
+# Taxonomie de scénarios — java-rest-controllers. Chargée par l'agent générique audit-coverage via
+# le profil source (manifest.provides.catalogs.scenario_groups).
+
+scenario_groups:
+  - id: nominal
+    description: Cas passant d'un endpoint, formulé dans le vocabulaire métier (la ressource est créée, listée, modifiée, supprimée).
+  - id: recherche_pagination
+    description: Filtrage, tri et pagination d'une liste, quand ils exigent le système réel (données en base).
+  - id: regle_metier
+    description: Règle métier qui n'a de sens qu'avec le système réel (doublon, ressource retirée, ordre, droits d'une organisation).
+  - id: refus_exemple
+    description: Un seul exemple représentatif de refus par type de refus métier. Les cas limites vont dans les tests unitaires.

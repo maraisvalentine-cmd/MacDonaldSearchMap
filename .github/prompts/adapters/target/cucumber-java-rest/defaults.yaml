@@ -1,0 +1,21 @@
+# Defaults de l'adapter target cucumber-java-rest, fusionnés dans la cascade de config
+# (engine/profiles/default → CE FICHIER → overlay → .shugyo.yaml). Voir engine/README.md.
+# Le step `setup` remplace `run.command` par la commande détectée (Maven ou Gradle, wrapper ou non).
+
+run:
+  command: "./mvnw -B test -Dtest=CucumberTest"
+  cwd: "{front_root}"
+  # Relance ciblée (mutation-validate) : {files_csv} = chemins de features relatifs à la racine du module,
+  # séparés par des virgules (propriété `cucumber.features`, ex. src/test/resources/features/x.feature).
+  targeted: "./mvnw -B test -Dtest=CucumberTest -Dcucumber.features={files_csv}"
+
+api:
+  framework: auto
+
+java:
+  build_tool: auto
+
+# feedback-loop lit le rapport JSON du plugin Cucumber `json:target/cucumber-reports/cucumber.json`.
+feedback:
+  reports_dir: target/cucumber-reports
+  report_format: cucumber-json

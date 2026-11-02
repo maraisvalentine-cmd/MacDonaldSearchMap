@@ -1,0 +1,22 @@
+# Adapter SOURCE — react-components.
+# Écrit les scénarios Gherkin À PARTIR DU CODE React (composants JSX/TSX, routes React Router,
+# appels HTTP), puis émet le pivot.json que le target (Cypress ou Playwright) implémentera.
+# Pendant React de `angular-components` : même contrat pivot, même scope, mêmes annotations de base.
+
+id: react-components
+kind: source
+engineRange: ">=1.0 <2.0"
+
+produces: [pivot@1, features]
+
+provides:
+  steps: [extract]
+  annotations: annotations.md
+
+# Ce que cet adapter sait SCOPER (cf. bloc `scope:` de .shugyo.yaml). Sans scope → toute l'app.
+scope_selectors: [routes, component]
+
+inputs:
+  - paths.front_root
+  - paths.app_root            # racine des composants (défaut: src)
+  - paths.routing_file        # fichier qui déclare les routes (optionnel — sinon auto-détecté)

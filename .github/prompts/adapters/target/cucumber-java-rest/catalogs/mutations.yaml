@@ -1,0 +1,159 @@
+# Catalogue de mutations : cucumber-java-rest (API REST Java, Spring et Quarkus). Chargé par l'agent
+# générique mutation-validate via manifest.provides.catalogs.mutations.
+#
+# Chaque entrée :
+#   id          : identifiant (M1..)
+#   family      : contract | domain | security (filtré par mutation.target_scope)
+#   target      : type de fichier ciblé
+#   expected    : killed | survived attendu
+#   description : recette (Localisation, Mutation old_string -> new_string, Champ ciblé, Signal attendu).
+#                 Variantes Spring (`@GetMapping`…) et JAX-RS (`@GET` + `@Path`) notées dans la recette.
+#
+# Les mutations touchent le code applicatif (src/main), jamais les features ni les classes d'étapes.
+# `expected: survived` marque ce que la suite Cucumber ne doit PAS attraper : les cas limites sont
+# couverts par des tests unitaires, pas par Cucumber (principe de l'adapter source).
+#
+# Défense en profondeur : une règle doublée par une contrainte de base (unicité SQL) ou par une autre couche
+# fait survivre sa mutation (mutant équivalent). Passer alors `expected` à `survived` dans un overlay du projet.
+# De même, si le projet teste ses bornes en Cucumber, la mutation M11 est `killed` pour ces bornes.
+#
+# Règle commune : `old_string` doit apparaître UNE seule fois dans le fichier ; sinon l'étendre au contexte
+# minimal (ligne voisine, signature de méthode).
+#
+# Le contrat de la famille `contract` : routes, verbes, paramètres, statuts, forme des réponses.
+# La famille `domain` : règles métier, tri, filtres, pagination. La famille `security` : autorisations.
+
+families: [contract, domain, security]
+
+mutations:
+  - id: M1
+    family: contract
+    target: "*Resource.java, *Controller.java"
+    expected: killed
+    description: |
+      Chemin d'un endpoint changé.
+      Localisation : `pivot.fields[].http.path` ; chercher le segment dans le contrôleur : `@GetMapping("/x")`, `@RequestMapping("/x")` (Spring) ou `@Path("/x")` (JAX-RS). Choisir un endpoint appelé par un scénario et dont le chemin est un littéral de méthode unique (un `@Path` ou mapping de méthode, pas celui de la classe).
+      Mutation : `"/x"` -> `"/x_mut"` sur la méthode (pas sur la classe).
+      Champ ciblé : le `technical_name` de l'endpoint.
+      Signal attendu : 404 sur l'appel, un scénario qui l'exerce tombe (parfois par une erreur de step sur le corps du 404 plutôt que par un assert de statut : le kill reste valide).
+
+  - id: M2
+    family: contract
+    target: "*Resource.java, *Controller.java"
+    expected: killed
+    description: |
+      Verbe HTTP changé.
+      Localisation : méthode d'un endpoint d'écriture exercé : `@PostMapping` / `@POST`.
+      Mutation : `@PostMapping` -> `@PutMapping` (Spring), `@POST` -> `@PUT` (JAX-RS).
+      Champ ciblé : le `technical_name` de l'endpoint.
+      Signal attendu : 405 ou 404, le scénario d'écriture tombe.
+
+  - id: M3
+    family: contract
+    target: "*Resource.java, *Controller.java"
+    expected: killed
+    description: |
+      Statut nominal changé.
+      Localisation : création qui renvoie 201 : `ResponseEntity.created(uri).body(x)` (Spring), `Response.created(location).entity(x).build()` (JAX-RS), ou `@ResponseStatus(CREATED)`.
+      Mutation : `created(…)` -> `ok()` ; `@ResponseStatus(CREATED)` -> `@ResponseStatus(OK)`.
+      Champ ciblé : l'endpoint de création du pivot.
+      Signal attendu : l'étape qui vérifie le statut de création tombe. Si seul l'effet métier est vérifié, la mutation survit : signaler un angle mort.
+
+  - id: M4
+    family: contract
+    target: "*Resource.java, *Controller.java"
+    expected: killed
+    description: |
+      Nom d'un paramètre de requête changé.
+      Localisation : `http.query_params[]` d'un endpoint de recherche : `@RequestParam(name = "page-size")` (Spring), `@QueryParam("page-size")` (JAX-RS), ou champ d'un `@BeanParam`.
+      Mutation : `"page-size"` -> `"page-size_mut"`.
+      Champ ciblé : l'endpoint de liste.
+      Signal attendu : le paramètre est ignoré, un scénario de pagination ou de filtre tombe.
+
+  - id: M5
+    family: contract
+    target: "Rest*.java, records de réponse"
+    expected: killed
+    description: |
+      Champ de la réponse retiré ou renommé.
+      Localisation : objet de réponse (`RestXxx`, `record`) lu par un scénario via JSONPath ; choisir un composant du record non vide.
+      Mutation : renommer le composant (`String name` -> `String name_mut`), ce qui change la clé JSON.
+      Champ ciblé : l'endpoint qui renvoie cet objet.
+      Signal attendu : `expected: "x" but was: null` sur ce champ.
+
+  - id: M6
+    family: contract
+    target: "gestionnaires d'exceptions (*Advice*.java, *ExceptionMapper*.java)"
+    expected: killed
+    description: |
+      Statut d'un refus métier changé.
+      Localisation : `@ExceptionHandler` / `@ControllerAdvice` (Spring) ou `ExceptionMapper` / `@ServerExceptionMapper` (JAX-RS) qui associe une exception métier à un statut (409, 404…). Choisir celle d'un refus couvert par un scénario `refus_exemple` ou `regle_metier`.
+      Mutation : `CONFLICT` / `409` -> `BAD_REQUEST` / `400`.
+      Champ ciblé : l'endpoint qui provoque ce refus.
+      Signal attendu : le scénario de refus tombe. S'il n'existe aucun scénario de ce refus, la mutation survit : signaler un angle mort.
+
+  - id: M7
+    family: domain
+    target: "*Service.java, domain/*.java"
+    expected: killed
+    description: |
+      Règle métier neutralisée (contrôle de doublon, état interdit).
+      Localisation : service ou entité qui lève une exception métier : `if (repository.exists(…)) { throw … }`, `assert`, `Assert.field(...)`. Choisir une règle qu'un scénario `regle_metier` exerce, et vérifier qu'aucune contrainte de base ne la double (index unique, clé étrangère) : sinon la mutation survit par défense en profondeur.
+      Mutation : remplacer la condition par `false` (`if (repo.exists(x)) {` -> `if (false) {`).
+      Champ ciblé : l'endpoint qui déclenche la règle.
+      Signal attendu : le scénario `regle_metier` tombe (le refus attendu n'arrive plus).
+
+  - id: M8
+    family: domain
+    target: "*Service.java, *Repository*.java, domain/*.java"
+    expected: killed
+    description: |
+      Ordre de tri inversé.
+      Localisation : tri d'une liste : `Sort.by(...)`, `ORDER BY`, `Comparator`, `.sorted(...)`. Choisir un tri qu'un scénario `recherche_pagination` vérifie dans l'ordre.
+      Mutation : `ASC` -> `DESC`, ou `Comparator.reverseOrder()`.
+      Champ ciblé : l'endpoint de liste.
+      Signal attendu : l'étape « liste dans l'ordre » tombe.
+
+  - id: M9
+    family: domain
+    target: "*Service.java, *Repository*.java, domain/*.java"
+    expected: killed
+    description: |
+      Critère de filtre ignoré.
+      Localisation : application d'un paramètre de recherche : `if (filter != null) query.where(…)`, clause `WHERE … LIKE`, `Specification`.
+      Mutation : retirer l'application du critère (garder le paramètre lu).
+      Champ ciblé : l'endpoint de liste.
+      Signal attendu : le scénario de filtre voit trop de résultats et tombe.
+
+  - id: M10
+    family: domain
+    target: "*Resource.java, *Controller.java, *Service.java"
+    expected: killed
+    description: |
+      Taille de page par défaut changée.
+      Localisation : `@RequestParam(defaultValue = "10")` (Spring), `@DefaultValue("10")` (JAX-RS), ou constante de pagination.
+      Mutation : `"10"` -> `"1"`.
+      Champ ciblé : l'endpoint de liste.
+      Signal attendu : un scénario qui liste sans préciser la page ne voit plus tous les éléments attendus.
+
+  - id: M11
+    family: domain
+    target: "value objects, domain/*.java"
+    expected: survived
+    description: |
+      Borne de validation relâchée.
+      Localisation : borne d'un objet valeur : le plus souvent une constante (`MAX_LENGTH = 100`, `MAX = new BigDecimal("100")`) lue par un constructeur ou `Assert.field(...).maxLength(MAX_LENGTH)` ; sinon un littéral (`length > 100`). Cibler la déclaration de la constante.
+      Mutation : `MAX_LENGTH = 100` -> `MAX_LENGTH = 101` (ou le littéral).
+      Champ ciblé : l'endpoint qui reçoit la valeur.
+      Signal attendu : aucun scénario ne tombe (`survived`) : les bornes sont couvertes par les tests unitaires des objets valeur, pas par Cucumber. Un test qui tombe signale une feature qui teste ce cas limite (c'est le cas de certains projets : voir la note en tête de catalogue).
+
+  - id: M12
+    family: security
+    target: "*Resource.java, *Service.java, configuration de sécurité"
+    expected: survived
+    description: |
+      Contrôle d'autorisation retiré.
+      Localisation : `@RolesAllowed`, `@PreAuthorize`, `@Secured`, `@Authenticated` sur la méthode ou le service, ou `requestMatchers(...).hasRole(...)` dans `SecurityFilterChain`. Choisir un endpoint dont `http.security.roles` n'est pas vide. Sur un service qui porte la même annotation sur plusieurs méthodes, `old_string` doit inclure la signature de la méthode visée (annotation + ligne suivante).
+      Mutation : supprimer l'annotation (ou `hasRole('X')` -> `permitAll()`).
+      Champ ciblé : l'endpoint protégé.
+      Signal attendu : aucun scénario ne tombe (`survived`) tant que les refus d'autorisation sont des tests unitaires de service. Si le projet teste les refus en Cucumber (un scénario de refus existe pour cet endpoint), changer `expected` en `killed` dans un overlay du projet.

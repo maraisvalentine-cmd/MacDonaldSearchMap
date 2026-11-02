@@ -1,0 +1,12 @@
+[
+  {
+    "nom": "Lyon",
+    "centre": {"type": "Point", "coordinates": [4.8320, 45.7578]},
+    "departement": {"code": "69", "nom": "Rhône"}
+  },
+  {
+    "nom": "Lyons-la-Forêt",
+    "centre": {"type": "Point", "coordinates": [1.4761, 49.3969]},
+    "departement": {"code": "27", "nom": "Eure"}
+  }
+]

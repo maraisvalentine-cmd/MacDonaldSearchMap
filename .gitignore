@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+
+# Pipeline Shugyo (artefacts de session)
+.shugyo.yaml
+pipeline/
+cypress/reports/

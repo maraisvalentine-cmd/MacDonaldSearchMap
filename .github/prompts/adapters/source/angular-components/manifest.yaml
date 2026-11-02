@@ -1,0 +1,26 @@
+# Adapter SOURCE — angular-components.
+# Écrit les scénarios Gherkin À PARTIR DU CODE Angular (composants + templates + routing),
+# puis émet le pivot.json que le target implémentera. C'est le cas d'usage canonique du
+# rattrapage : lire le code, en déduire les scénarios, les faire implémenter.
+#
+# Découverte récursive du sous-arbre de composants depuis un point d'entrée (route ou
+# composant) — même découpage que l'agent refactor, pour rattraper puis refactorer au
+# même périmètre.
+
+id: angular-components
+kind: source
+engineRange: ">=1.0 <2.0"
+
+produces: [pivot@1, features]
+
+provides:
+  steps: [extract]
+  annotations: annotations.md
+
+# Ce que cet adapter sait SCOPER (cf. bloc `scope:` de .shugyo.yaml). Sans scope → tout l'app.
+scope_selectors: [routes, component]
+
+inputs:
+  - paths.front_root
+  - paths.app_root            # racine des composants (défaut: src/app)
+  - paths.routing_file        # config de routing (optionnel — sinon auto-détecté)

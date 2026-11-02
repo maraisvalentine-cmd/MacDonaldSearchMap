@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "start": "vite --port 5173 --strictPort",
+    "test:e2e:cypress": "start-server-and-test start http://localhost:5173 \"cypress run\""
   },
   "dependencies": {
     "axios": "^1.13.5",
@@ -21,6 +23,8 @@
     "react-select": "^5.10.2"
   },
   "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^28.0.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
     "@eslint/js": "^9.39.1",
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/eslint-plugin-query": "^5.91.5",
@@ -31,12 +35,16 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.27",
+    "cypress": "^16.2.1",
+    "cypress-mochawesome-reporter": "^5.0.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.8",
+    "start-server-and-test": "^3.0.13",
     "tailwindcss": "^3.4.19",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"

@@ -1,0 +1,18 @@
+[
+  {
+    "place_id": 2001,
+    "osm_type": "way",
+    "osm_id": 11111111,
+    "lat": "45.7618",
+    "lon": "4.8320",
+    "display_name": "McDonald's Lyon Bellecour"
+  },
+  {
+    "place_id": 2002,
+    "osm_type": "node",
+    "osm_id": 22222222,
+    "lat": "45.7538",
+    "lon": "4.8320",
+    "display_name": "McDonald's Lyon Perrache"
+  }
+]

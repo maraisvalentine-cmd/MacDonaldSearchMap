@@ -1,0 +1,18 @@
+# Defaults de l'adapter target playwright, fusionnés dans la cascade de config
+# (engine/profiles/default → CE FICHIER → overlay → .shugyo.yaml). Voir engine/README.md.
+
+# `bddgen` convertit les .feature en tests Playwright, puis `playwright test` les lance.
+# Le dev server est démarré par le bloc `webServer` de la config (écrit par le step `setup`).
+run:
+  command: "npx bddgen && npx playwright test"
+  cwd: "{front_root}"
+  # Relance ciblée (mutation-validate) : {files} = features séparées par des espaces (filtre par chemin).
+  targeted: "npx bddgen && npx playwright test {files}"
+
+playwright:
+  config_file: playwright.config.ts
+
+# feedback-loop lit le JSON reporter de Playwright.
+feedback:
+  reports_dir: playwright-report
+  report_format: playwright-json

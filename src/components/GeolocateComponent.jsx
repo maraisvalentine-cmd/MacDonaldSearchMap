@@ -13,6 +13,7 @@ export default function GeolocateComponent() {
     return (
         <div className="absolute top-4 right-5 z-10">
             <button role="geolocate"
+                data-testid="geolocate-button"
                 className="py-1 border-2 border-black rounded-lg font-semibold bg-yellow-400 hover:bg-yellow-200 hover:ring-4"
                 onClick={locate}>
                 <img src={geolocateLogo} className="h-8 w-8" alt="Géolocaliser"/>
