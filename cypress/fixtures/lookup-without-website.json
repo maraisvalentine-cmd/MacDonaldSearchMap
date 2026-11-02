@@ -1,0 +1,16 @@
+[
+  {
+    "place_id": 2001,
+    "osm_type": "way",
+    "osm_id": 11111111,
+    "address": {
+      "amenity": "McDonald's",
+      "road": "Rue de la République",
+      "postcode": "69002",
+      "town": "Lyon"
+    },
+    "extratags": {
+      "phone": "+33 4 78 00 00 00"
+    }
+  }
+]

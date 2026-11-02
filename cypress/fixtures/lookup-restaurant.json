@@ -1,0 +1,19 @@
+[
+  {
+    "place_id": 2001,
+    "osm_type": "way",
+    "osm_id": 11111111,
+    "address": {
+      "amenity": "McDonald's",
+      "road": "Rue de la République",
+      "suburb": "Lyon 2e Arrondissement",
+      "postcode": "69002",
+      "town": "Lyon"
+    },
+    "extratags": {
+      "phone": "+33 4 78 00 00 00",
+      "opening_hours": "Mo-Su 07:00-23:00",
+      "website": "https://www.mcdonalds.fr/restaurants/lyon-bellecour"
+    }
+  }
+]
