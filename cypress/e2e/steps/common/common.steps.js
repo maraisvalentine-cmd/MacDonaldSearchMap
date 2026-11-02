@@ -58,6 +58,29 @@ Then('aucun appel de recherche de restaurants n\'a été émis', () => {
     cy.get('@searchRestaurants.all').should('have.length', 0);
 });
 
+Then('une seule recherche de restaurants a été émise', () => {
+    // On attend la première requête, puis un court délai pour laisser passer une éventuelle requête en double.
+    cy.wait('@searchRestaurants');
+    cy.wait(500);
+    cy.get('@searchRestaurants.all').should('have.length', 1);
+});
+
+// Le viewbox est envoyé sous la forme est,nord,ouest,sud. La zone doit contenir la position
+// attendue : toutes les requêtes émises sont contrôlées, pas seulement la dernière.
+Then('la zone recherchée contient la latitude {float} et la longitude {float}', (latitude, longitude) => {
+    cy.get('@searchRestaurants.all').then((calls) => {
+        expect(calls).to.have.length.greaterThan(0);
+        calls.forEach((call) => {
+            const viewbox = new URL(call.request.url).searchParams.get('viewbox');
+            const [east, north, west, south] = viewbox.split(',').map(Number);
+            expect(west, `ouest de ${viewbox}`).to.be.lessThan(longitude);
+            expect(east, `est de ${viewbox}`).to.be.greaterThan(longitude);
+            expect(south, `sud de ${viewbox}`).to.be.lessThan(latitude);
+            expect(north, `nord de ${viewbox}`).to.be.greaterThan(latitude);
+        });
+    });
+});
+
 Then('un appel de détails est émis', () => {
     cy.wait('@lookup');
 });

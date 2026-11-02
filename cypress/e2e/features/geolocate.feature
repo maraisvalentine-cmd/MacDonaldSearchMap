@@ -30,6 +30,19 @@ Fonctionnalité: Géolocalisation
     Alors un appel de recherche de restaurants est émis
     Et 2 marqueurs sont affichés
 
+  # composant: GeolocateComponent, MapView
+  # étape: geolocate
+  # champ: geolocate_button
+  # selector: [data-testid=geolocate-button]
+  # intercept-required: GET search (amenity=McDonald) avec viewbox
+  # [NOMINAL]
+  # render: SearchRestaurants lit la zone visible après le recentrage de la carte sur ma position
+  Scénario: La recherche de restaurants porte sur la zone de ma position
+    Soit la géolocalisation du navigateur renvoie la position de Lyon
+    Quand je clique sur le bouton de géolocalisation
+    Alors une seule recherche de restaurants a été émise
+    Et la zone recherchée contient la latitude 45.7578 et la longitude 4.832
+
   # composant: GeolocateComponent
   # étape: geolocate
   # champ: geolocate_button

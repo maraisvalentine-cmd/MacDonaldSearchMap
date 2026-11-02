@@ -95,6 +95,20 @@ Fonctionnalité: Recherche de ville
     Alors un appel de recherche de restaurants est émis
     Et 2 marqueurs sont affichés
 
+  # composant: SearchComponent, MapView
+  # étape: search-city
+  # champ: search_city_submit
+  # selector: [data-testid=search-submit]
+  # intercept-required: GET search (featureType=city), GET search (amenity=McDonald) avec viewbox
+  # [NOMINAL]
+  # render: SearchRestaurants lit la zone visible après le recentrage de la carte sur la ville
+  Scénario: La recherche de restaurants porte sur la zone de la ville choisie
+    Quand je saisis "Lyon" dans le champ de recherche de ville
+    Et je choisis la première suggestion de ville
+    Et je valide la recherche
+    Alors une seule recherche de restaurants a été émise
+    Et la zone recherchée contient la latitude 45.7578 et la longitude 4.832
+
   # composant: SearchComponent
   # étape: search-city
   # champ: search_city_submit
