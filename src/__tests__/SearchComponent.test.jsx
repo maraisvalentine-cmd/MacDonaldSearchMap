@@ -1,5 +1,5 @@
 import {search} from '../services/nominatimApi.js';
-import {fireEvent, render, screen} from '@testing-library/react';
+import {fireEvent, screen, waitFor} from '@testing-library/react';
 import {describe, expect, it, vi} from 'vitest';
 import SearchComponent from '../components/SearchComponent.jsx';
 import {renderWithProviders} from './TestUtils.jsx';
@@ -18,11 +18,11 @@ describe('SearchComponent', () => {
         expect(mockSearch).not.toHaveBeenCalled();
     });
 
-    it('appelle une api nominatim de recherche à partir de 3 caractères', () => {
+    it('appelle une api nominatim de recherche à partir de 3 caractères', async () => {
         renderWithProviders(<SearchComponent/>);
         fireEvent.change(screen.getByRole('combobox'), {
             target: {value: 'Lyo'},
         });
-        expect(mockSearch).toHaveBeenCalled();
+        await waitFor(() => expect(mockSearch).toHaveBeenCalled());
     });
 });
